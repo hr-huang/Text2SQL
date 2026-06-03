@@ -1,0 +1,2903 @@
+{
+  "datasource_id": "ecommerce_db",
+  "db_type": "sqlite",
+  "description": "SQLite database: ecommerce.db",
+  "tables": [
+    {
+      "table_name": "banners",
+      "business_name": "banners",
+      "description": "",
+      "primary_key": "banner_id",
+      "columns": [
+        {
+          "column_name": "banner_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "banner_id",
+          "description": ""
+        },
+        {
+          "column_name": "title",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "双11狂欢节",
+            "618年中大促",
+            "新用户专享",
+            "品牌日特卖",
+            "限时秒杀"
+          ],
+          "business_name": "title",
+          "description": ""
+        },
+        {
+          "column_name": "image",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "/images/banner_1.jpg",
+            "/images/banner_2.jpg",
+            "/images/banner_3.jpg",
+            "/images/banner_4.jpg",
+            "/images/banner_5.jpg"
+          ],
+          "business_name": "image",
+          "description": ""
+        },
+        {
+          "column_name": "link_url",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "/promo/1",
+            "/promo/2",
+            "/promo/3",
+            "/promo/4",
+            "/promo/5"
+          ],
+          "business_name": "link_url",
+          "description": ""
+        },
+        {
+          "column_name": "sort_order",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "sort_order",
+          "description": ""
+        },
+        {
+          "column_name": "is_active",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1
+          ],
+          "business_name": "is_active",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "campaigns",
+      "business_name": "campaigns",
+      "description": "",
+      "primary_key": "campaign_id",
+      "columns": [
+        {
+          "column_name": "campaign_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "campaign_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "双11大促",
+            "618年中庆",
+            "年货节",
+            "开学季",
+            "国庆特惠"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "start_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2026-04-16",
+            "2025-08-07",
+            "2025-10-19",
+            "2026-02-22",
+            "2026-02-10"
+          ],
+          "business_name": "start_date",
+          "description": ""
+        },
+        {
+          "column_name": "end_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2026-04-23",
+            "2025-08-14",
+            "2025-10-28",
+            "2026-03-03",
+            "2026-02-23"
+          ],
+          "business_name": "end_date",
+          "description": ""
+        },
+        {
+          "column_name": "discount_type",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "满减",
+            "直降",
+            "买赠"
+          ],
+          "business_name": "discount_type",
+          "description": ""
+        },
+        {
+          "column_name": "discount_value",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            0.68,
+            0.75,
+            0.63,
+            0.56,
+            0.53
+          ],
+          "business_name": "discount_value",
+          "description": ""
+        },
+        {
+          "column_name": "budget",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            15897.0,
+            32426.0,
+            9934.0,
+            38461.0,
+            31349.0
+          ],
+          "business_name": "budget",
+          "description": ""
+        },
+        {
+          "column_name": "status",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "已结束",
+            "进行中"
+          ],
+          "business_name": "status",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "categories",
+      "business_name": "categories",
+      "description": "",
+      "primary_key": "category_id",
+      "columns": [
+        {
+          "column_name": "category_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "category_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "电子产品",
+            "服装鞋帽",
+            "食品饮料",
+            "图书音像",
+            "手机通讯"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "parent_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [],
+          "business_name": "parent_id",
+          "description": ""
+        },
+        {
+          "column_name": "description",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "手机、电脑、数码配件",
+            "男装、女装、鞋类",
+            "零食、饮料、生鲜",
+            "图书、电子书、音乐",
+            "智能手机、功能机"
+          ],
+          "business_name": "description",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "coupon_usage",
+      "business_name": "coupon_usage",
+      "description": "",
+      "primary_key": "usage_id",
+      "columns": [
+        {
+          "column_name": "usage_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            183,
+            147,
+            189,
+            185,
+            57
+          ],
+          "business_name": "usage_id",
+          "description": ""
+        },
+        {
+          "column_name": "coupon_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            10,
+            2,
+            9,
+            1,
+            6
+          ],
+          "business_name": "coupon_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            5,
+            18,
+            23,
+            30,
+            51
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            499,
+            63,
+            139,
+            419,
+            147
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "discount_amount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            72.45,
+            91.63,
+            22.23,
+            89.44,
+            17.82
+          ],
+          "business_name": "discount_amount",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "coupons",
+      "business_name": "coupons",
+      "description": "",
+      "primary_key": "coupon_id",
+      "columns": [
+        {
+          "column_name": "coupon_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "coupon_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "新人10元券",
+            "满200减30",
+            "全场8折",
+            "会员专享券",
+            "限时5折"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "discount_type",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "折扣",
+            "满减"
+          ],
+          "business_name": "discount_type",
+          "description": ""
+        },
+        {
+          "column_name": "discount_value",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            28.0,
+            13.0,
+            0.52,
+            81.0,
+            0.59
+          ],
+          "business_name": "discount_value",
+          "description": ""
+        },
+        {
+          "column_name": "min_amount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            108.0,
+            203.0,
+            222.0,
+            284.0,
+            294.0
+          ],
+          "business_name": "min_amount",
+          "description": ""
+        },
+        {
+          "column_name": "total_qty",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            333,
+            347,
+            126,
+            409,
+            290
+          ],
+          "business_name": "total_qty",
+          "description": ""
+        },
+        {
+          "column_name": "used_qty",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            37,
+            88,
+            109,
+            142,
+            40
+          ],
+          "business_name": "used_qty",
+          "description": ""
+        },
+        {
+          "column_name": "start_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-11-18",
+            "2025-07-10",
+            "2026-01-15",
+            "2026-03-20",
+            "2025-07-24"
+          ],
+          "business_name": "start_date",
+          "description": ""
+        },
+        {
+          "column_name": "end_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2026-06-14",
+            "2026-06-23",
+            "2026-05-16",
+            "2026-06-07",
+            "2026-06-27"
+          ],
+          "business_name": "end_date",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "customer_addresses",
+      "business_name": "customer_addresses",
+      "description": "",
+      "primary_key": "address_id",
+      "columns": [
+        {
+          "column_name": "address_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "address_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "is_default",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1
+          ],
+          "business_name": "is_default",
+          "description": ""
+        },
+        {
+          "column_name": "receiver_name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Michael Sweeney",
+            "黄冬梅",
+            "Amanda Foley",
+            "Justin Reeves",
+            "Cheryl Reeves"
+          ],
+          "business_name": "receiver_name",
+          "description": ""
+        },
+        {
+          "column_name": "phone",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "13085329873",
+            "001-677-239-6103",
+            "15318877169",
+            "426-357-2818",
+            "18543763185"
+          ],
+          "business_name": "phone",
+          "description": ""
+        },
+        {
+          "column_name": "province",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "河南省",
+            "贵州省",
+            "河北省",
+            "黑龙江省",
+            "四川省"
+          ],
+          "business_name": "province",
+          "description": ""
+        },
+        {
+          "column_name": "city",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "兰州县",
+            "South Amber",
+            "Williamburgh",
+            "Rhondaburgh",
+            "Johnsonville"
+          ],
+          "business_name": "city",
+          "description": ""
+        },
+        {
+          "column_name": "detail",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "5473 Chase Camp Suite 990",
+            "辛集街u座",
+            "沈阳街c座",
+            "608 Garcia Square",
+            "8144 Adam Summit Suite 075"
+          ],
+          "business_name": "detail",
+          "description": ""
+        },
+        {
+          "column_name": "zip",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "60639",
+            "82407",
+            "71021",
+            "89287",
+            "06417"
+          ],
+          "business_name": "zip",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "customers",
+      "business_name": "customers",
+      "description": "",
+      "primary_key": "customer_id",
+      "columns": [
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            3,
+            6,
+            9,
+            12,
+            14
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Roger Vargas",
+            "Mary Rogers",
+            "Meredith Hill",
+            "萧小红",
+            "Joseph Coleman"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "gender",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "女",
+            "男"
+          ],
+          "business_name": "gender",
+          "description": ""
+        },
+        {
+          "column_name": "age",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            54,
+            31,
+            60,
+            29,
+            18
+          ],
+          "business_name": "age",
+          "description": ""
+        },
+        {
+          "column_name": "city",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Port Sarah",
+            "Hunterborough",
+            "兰州市",
+            "North Kellyfurt",
+            "Jacquelineview"
+          ],
+          "business_name": "city",
+          "description": ""
+        },
+        {
+          "column_name": "province",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "湖北省",
+            "海南省",
+            "甘肃省",
+            "福建省",
+            "广东省"
+          ],
+          "business_name": "province",
+          "description": ""
+        },
+        {
+          "column_name": "region_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "region_id",
+          "description": ""
+        },
+        {
+          "column_name": "register_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-06-12",
+            "2024-11-09",
+            "2025-10-09",
+            "2026-03-27",
+            "2024-05-23"
+          ],
+          "business_name": "register_date",
+          "description": ""
+        },
+        {
+          "column_name": "vip_level",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "普通",
+            "银卡",
+            "钻石",
+            "金卡"
+          ],
+          "business_name": "vip_level",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "employees",
+      "business_name": "employees",
+      "description": "",
+      "primary_key": "employee_id",
+      "columns": [
+        {
+          "column_name": "employee_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "employee_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Diana Pierce",
+            "严凯",
+            "庞俊",
+            "梁桂花",
+            "Brandon Greene DDS"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "department",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "客服部",
+            "运营部",
+            "财务部",
+            "销售部",
+            "仓储部"
+          ],
+          "business_name": "department",
+          "description": ""
+        },
+        {
+          "column_name": "title",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "总监",
+            "专员",
+            "经理",
+            "主管"
+          ],
+          "business_name": "title",
+          "description": ""
+        },
+        {
+          "column_name": "hire_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-07-17",
+            "2023-12-11",
+            "2022-08-09",
+            "2025-11-06",
+            "2024-03-18"
+          ],
+          "business_name": "hire_date",
+          "description": ""
+        },
+        {
+          "column_name": "salary",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            16645.0,
+            15873.0,
+            7187.0,
+            8327.0,
+            24336.0
+          ],
+          "business_name": "salary",
+          "description": ""
+        },
+        {
+          "column_name": "region_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            5,
+            7,
+            2,
+            3,
+            1
+          ],
+          "business_name": "region_id",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "inventory_log",
+      "business_name": "inventory_log",
+      "description": "",
+      "primary_key": "log_id",
+      "columns": [
+        {
+          "column_name": "log_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            191,
+            401,
+            791,
+            885,
+            1280
+          ],
+          "business_name": "log_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "change_qty",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            -24,
+            36,
+            12,
+            -21,
+            -36
+          ],
+          "business_name": "change_qty",
+          "description": ""
+        },
+        {
+          "column_name": "reason",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "损耗报损",
+            "销售出库",
+            "盘点调整",
+            "采购入库",
+            "退货入库"
+          ],
+          "business_name": "reason",
+          "description": ""
+        },
+        {
+          "column_name": "log_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-10-25T14:50:07",
+            "2026-02-06T22:05:46",
+            "2025-11-08T10:02:20",
+            "2026-05-20T15:21:09",
+            "2025-07-03T03:26:51"
+          ],
+          "business_name": "log_time",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "notifications",
+      "business_name": "notifications",
+      "description": "",
+      "primary_key": "notify_id",
+      "columns": [
+        {
+          "column_name": "notify_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            387,
+            618,
+            754,
+            623,
+            943
+          ],
+          "business_name": "notify_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "title",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "物流更新",
+            "促销活动",
+            "优惠券到期提醒",
+            "评价邀请",
+            "订单发货通知"
+          ],
+          "business_name": "title",
+          "description": ""
+        },
+        {
+          "column_name": "content",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Federal get walk remain wait military.",
+            "已经这么最新你的部分只是没有只要.",
+            "可是东西规定部分新闻认为自己一切.",
+            "Resource free modern since.",
+            "Left hair catch fight."
+          ],
+          "business_name": "content",
+          "description": ""
+        },
+        {
+          "column_name": "is_read",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            0,
+            1
+          ],
+          "business_name": "is_read",
+          "description": ""
+        },
+        {
+          "column_name": "create_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-08-10T14:26:13",
+            "2025-12-10T23:02:32",
+            "2025-09-06T03:42:21",
+            "2026-01-04T16:27:10",
+            "2025-06-09T14:45:49"
+          ],
+          "business_name": "create_time",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "order_details",
+      "business_name": "order_details",
+      "description": "",
+      "primary_key": "detail_id",
+      "columns": [
+        {
+          "column_name": "detail_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "detail_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            169,
+            83,
+            3,
+            86,
+            48
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "unit_price",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            4653.99,
+            2730.66,
+            5908.92,
+            6346.4,
+            717.76
+          ],
+          "business_name": "unit_price",
+          "description": ""
+        },
+        {
+          "column_name": "quantity",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            10,
+            2,
+            3,
+            6,
+            7
+          ],
+          "business_name": "quantity",
+          "description": ""
+        },
+        {
+          "column_name": "discount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            0.18,
+            0.13,
+            0.08,
+            0.06,
+            0.15
+          ],
+          "business_name": "discount",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "orders",
+      "business_name": "orders",
+      "description": "",
+      "primary_key": "order_id",
+      "columns": [
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            22,
+            483,
+            506,
+            604,
+            1738
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "employee_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            46,
+            14,
+            39,
+            37,
+            7
+          ],
+          "business_name": "employee_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-05-31T18:43:00",
+            "2024-05-31T18:50:50",
+            "2024-06-01T10:49:24",
+            "2024-06-01T14:09:11",
+            "2024-06-01T21:10:10"
+          ],
+          "business_name": "order_date",
+          "description": ""
+        },
+        {
+          "column_name": "required_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-08-16T06:00:08",
+            "2024-12-17T13:19:34",
+            "2024-12-08T20:08:39",
+            "2024-08-11T15:19:01",
+            "2026-03-26T09:36:15"
+          ],
+          "business_name": "required_date",
+          "description": ""
+        },
+        {
+          "column_name": "shipped_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-08-13T04:00:08",
+            "2024-12-06T18:08:39",
+            "2024-08-10T06:19:01",
+            "2025-01-09T04:18:58",
+            "2025-06-18T03:44:31"
+          ],
+          "business_name": "shipped_date",
+          "description": ""
+        },
+        {
+          "column_name": "shipper_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            4,
+            1,
+            2,
+            5,
+            3
+          ],
+          "business_name": "shipper_id",
+          "description": ""
+        },
+        {
+          "column_name": "status",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "已完成",
+            "已付款",
+            "已发货",
+            "已退货",
+            "已取消"
+          ],
+          "business_name": "status",
+          "description": ""
+        },
+        {
+          "column_name": "total_amount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            92350.89,
+            4048.17,
+            103218.6,
+            101004.47,
+            144892.94
+          ],
+          "business_name": "total_amount",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "payments",
+      "business_name": "payments",
+      "description": "",
+      "primary_key": "payment_id",
+      "columns": [
+        {
+          "column_name": "payment_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "payment_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "amount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            28712.16,
+            70540.86,
+            1228.34,
+            2912.7,
+            81225.52
+          ],
+          "business_name": "amount",
+          "description": ""
+        },
+        {
+          "column_name": "pay_method",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "支付宝",
+            "信用卡",
+            "银行卡",
+            "余额",
+            "微信支付"
+          ],
+          "business_name": "pay_method",
+          "description": ""
+        },
+        {
+          "column_name": "pay_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-09-19T03:48:28",
+            "2025-05-01T22:44:12",
+            "2025-01-12T05:40:08",
+            "2024-06-25T07:47:51",
+            "2026-05-25T23:53:27"
+          ],
+          "business_name": "pay_time",
+          "description": ""
+        },
+        {
+          "column_name": "status",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "成功",
+            "退款",
+            "失败"
+          ],
+          "business_name": "status",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "product_attributes",
+      "business_name": "product_attributes",
+      "description": "",
+      "primary_key": "attr_id",
+      "columns": [
+        {
+          "column_name": "attr_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            68,
+            88,
+            263,
+            42,
+            177
+          ],
+          "business_name": "attr_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "attr_name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "产地",
+            "重量",
+            "材质",
+            "适用人群",
+            "尺寸"
+          ],
+          "business_name": "attr_name",
+          "description": ""
+        },
+        {
+          "column_name": "attr_value",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "江苏",
+            "0.5kg",
+            "真皮",
+            "儿童",
+            "广东"
+          ],
+          "business_name": "attr_value",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "product_images",
+      "business_name": "product_images",
+      "description": "",
+      "primary_key": "image_id",
+      "columns": [
+        {
+          "column_name": "image_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "image_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "image_url",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "/images/products/1_0.jpg",
+            "/images/products/1_1.jpg",
+            "/images/products/1_2.jpg",
+            "/images/products/1_3.jpg",
+            "/images/products/2_0.jpg"
+          ],
+          "business_name": "image_url",
+          "description": ""
+        },
+        {
+          "column_name": "is_main",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            0,
+            1
+          ],
+          "business_name": "is_main",
+          "description": ""
+        },
+        {
+          "column_name": "sort_order",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "business_name": "sort_order",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "products",
+      "business_name": "products",
+      "description": "",
+      "primary_key": "product_id",
+      "columns": [
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            5,
+            7,
+            14,
+            36,
+            47
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Assimilated user-facing focus group",
+            "Face-to-face client-driven support",
+            "Synergistic user-facing moratorium",
+            "Reverse-engineered interactive alliance",
+            "Cross-group didactic emulation"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "category_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "category_id",
+          "description": ""
+        },
+        {
+          "column_name": "unit_price",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            259.76,
+            1403.88,
+            5908.92,
+            2194.09,
+            5616.74
+          ],
+          "business_name": "unit_price",
+          "description": ""
+        },
+        {
+          "column_name": "cost",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            103.9,
+            561.55,
+            2363.57,
+            877.64,
+            2246.7
+          ],
+          "business_name": "cost",
+          "description": ""
+        },
+        {
+          "column_name": "unit",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "件"
+          ],
+          "business_name": "unit",
+          "description": ""
+        },
+        {
+          "column_name": "stock",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            140,
+            52,
+            16,
+            258,
+            366
+          ],
+          "business_name": "stock",
+          "description": ""
+        },
+        {
+          "column_name": "supplier_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            8,
+            18,
+            1,
+            20,
+            9
+          ],
+          "business_name": "supplier_id",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "regions",
+      "business_name": "regions",
+      "description": "",
+      "primary_key": "region_id",
+      "columns": [
+        {
+          "column_name": "region_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "region_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "华北",
+            "华东",
+            "华南",
+            "西南",
+            "西北"
+          ],
+          "business_name": "name",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "return_details",
+      "business_name": "return_details",
+      "description": "",
+      "primary_key": "rd_id",
+      "columns": [
+        {
+          "column_name": "rd_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            58,
+            101,
+            190,
+            203,
+            219
+          ],
+          "business_name": "rd_id",
+          "description": ""
+        },
+        {
+          "column_name": "return_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            2,
+            3,
+            4,
+            5,
+            7
+          ],
+          "business_name": "return_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            140,
+            93,
+            134,
+            66,
+            51
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "quantity",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            2,
+            1,
+            3
+          ],
+          "business_name": "quantity",
+          "description": ""
+        },
+        {
+          "column_name": "unit_price",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            247.42,
+            130.84,
+            388.74,
+            415.2,
+            930.51
+          ],
+          "business_name": "unit_price",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "returns",
+      "business_name": "returns",
+      "description": "",
+      "primary_key": "return_id",
+      "columns": [
+        {
+          "column_name": "return_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            188,
+            56,
+            50,
+            46,
+            41
+          ],
+          "business_name": "return_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            5,
+            6,
+            16,
+            29,
+            40
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            349,
+            180,
+            222,
+            313,
+            399
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "return_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-08-17T19:50:02",
+            "2026-03-03T01:49:37",
+            "2025-06-24T05:04:14",
+            "2026-05-22T02:45:23",
+            "2025-09-14T08:27:21"
+          ],
+          "business_name": "return_date",
+          "description": ""
+        },
+        {
+          "column_name": "reason",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "发错货",
+            "与描述不符",
+            "尺寸不合适",
+            "不想要了",
+            "质量问题"
+          ],
+          "business_name": "reason",
+          "description": ""
+        },
+        {
+          "column_name": "refund_amount",
+          "type": "REAL",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            185.06,
+            1085.8,
+            1448.46,
+            1576.17,
+            1714.01
+          ],
+          "business_name": "refund_amount",
+          "description": ""
+        },
+        {
+          "column_name": "status",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "待审核",
+            "已退款",
+            "已完成",
+            "已拒绝"
+          ],
+          "business_name": "status",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "reviews",
+      "business_name": "reviews",
+      "description": "",
+      "primary_key": "review_id",
+      "columns": [
+        {
+          "column_name": "review_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            67,
+            104,
+            106,
+            107,
+            110
+          ],
+          "business_name": "review_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            35,
+            233,
+            392,
+            272,
+            34
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "rating",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "rating",
+          "description": ""
+        },
+        {
+          "column_name": "content",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Even probably son second.",
+            "来源主要手机原因应用.",
+            "About when force ready network nothing ability.",
+            "系列只有留言评论用户.",
+            "Here person three foot."
+          ],
+          "business_name": "content",
+          "description": ""
+        },
+        {
+          "column_name": "review_date",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2024-07-19T06:31:50",
+            "2025-09-30T18:32:04",
+            "2024-10-23T21:35:28",
+            "2025-11-02T15:22:46",
+            "2025-03-04T13:27:50"
+          ],
+          "business_name": "review_date",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "search_logs",
+      "business_name": "search_logs",
+      "description": "",
+      "primary_key": "search_id",
+      "columns": [
+        {
+          "column_name": "search_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            23,
+            198,
+            609,
+            683,
+            686
+          ],
+          "business_name": "search_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            5,
+            6
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "keyword",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "T恤",
+            "零食",
+            "蓝牙音箱",
+            "面膜",
+            "牛奶"
+          ],
+          "business_name": "keyword",
+          "description": ""
+        },
+        {
+          "column_name": "result_count",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            103,
+            137,
+            108,
+            96,
+            7
+          ],
+          "business_name": "result_count",
+          "description": ""
+        },
+        {
+          "column_name": "search_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-12-11T06:21:55",
+            "2025-06-29T19:01:43",
+            "2025-06-30T19:34:13",
+            "2026-01-24T11:53:16",
+            "2025-06-12T14:20:10"
+          ],
+          "business_name": "search_time",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "shippers",
+      "business_name": "shippers",
+      "description": "",
+      "primary_key": "shipper_id",
+      "columns": [
+        {
+          "column_name": "shipper_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "shipper_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "顺丰速运",
+            "京东物流",
+            "中通快递",
+            "圆通速递",
+            "韵达快递"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "phone",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "95338",
+            "950616",
+            "95311",
+            "95554",
+            "95546"
+          ],
+          "business_name": "phone",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "shipping_tracking",
+      "business_name": "shipping_tracking",
+      "description": "",
+      "primary_key": "track_id",
+      "columns": [
+        {
+          "column_name": "track_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "track_id",
+          "description": ""
+        },
+        {
+          "column_name": "order_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            4,
+            5,
+            6
+          ],
+          "business_name": "order_id",
+          "description": ""
+        },
+        {
+          "column_name": "status",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "派送中",
+            "已揽收",
+            "运输中",
+            "到达中转",
+            "已签收"
+          ],
+          "business_name": "status",
+          "description": ""
+        },
+        {
+          "column_name": "location",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "马鞍山市",
+            "成都县",
+            "Robertchester",
+            "Lake Nicole",
+            "勇县"
+          ],
+          "business_name": "location",
+          "description": ""
+        },
+        {
+          "column_name": "update_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2025-08-01T06:25:04",
+            "2026-05-16T17:25:05",
+            "2025-12-13T01:17:50",
+            "2025-11-06T04:36:06",
+            "2025-11-18T11:13:02"
+          ],
+          "business_name": "update_time",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "shopping_cart",
+      "business_name": "shopping_cart",
+      "description": "",
+      "primary_key": "cart_id",
+      "columns": [
+        {
+          "column_name": "cart_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            75,
+            41,
+            59,
+            146,
+            105
+          ],
+          "business_name": "cart_id",
+          "description": ""
+        },
+        {
+          "column_name": "customer_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            4,
+            6,
+            10,
+            11,
+            12
+          ],
+          "business_name": "customer_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            29,
+            168,
+            153,
+            145,
+            26
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "quantity",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            3,
+            1,
+            4,
+            5,
+            2
+          ],
+          "business_name": "quantity",
+          "description": ""
+        },
+        {
+          "column_name": "add_time",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "2026-05-31T20:13:47.223029",
+            "2026-05-31T20:13:47.789019",
+            "2026-05-31T20:13:47.023196",
+            "2026-05-31T20:13:47.699945",
+            "2026-05-31T20:13:47.890584"
+          ],
+          "business_name": "add_time",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "suppliers",
+      "business_name": "suppliers",
+      "description": "",
+      "primary_key": "supplier_id",
+      "columns": [
+        {
+          "column_name": "supplier_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "supplier_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "易动力信息有限公司",
+            "四通信息有限公司",
+            "George LLC",
+            "Barr, Kelly and Roberts",
+            "Maxwell-Jenkins"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "contact",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "Kelly Rogers DVM",
+            "Julie Johnson",
+            "Sheena Burton",
+            "汪博",
+            "刘桂花"
+          ],
+          "business_name": "contact",
+          "description": ""
+        },
+        {
+          "column_name": "phone",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "406-546-2879",
+            "13844714627",
+            "001-915-489-0429x025",
+            "14528554451",
+            "18038988816"
+          ],
+          "business_name": "phone",
+          "description": ""
+        },
+        {
+          "column_name": "city",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "桂兰县",
+            "济南县",
+            "North Joseph",
+            "North Derrick",
+            "North Loritown"
+          ],
+          "business_name": "city",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "warehouse_inventory",
+      "business_name": "warehouse_inventory",
+      "description": "",
+      "primary_key": "wi_id",
+      "columns": [
+        {
+          "column_name": "wi_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            314,
+            336,
+            232,
+            273,
+            3
+          ],
+          "business_name": "wi_id",
+          "description": ""
+        },
+        {
+          "column_name": "warehouse_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "warehouse_id",
+          "description": ""
+        },
+        {
+          "column_name": "product_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            7
+          ],
+          "business_name": "product_id",
+          "description": ""
+        },
+        {
+          "column_name": "quantity",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            119,
+            106,
+            52,
+            115,
+            170
+          ],
+          "business_name": "quantity",
+          "description": ""
+        },
+        {
+          "column_name": "shelf_code",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "A-11",
+            "D-03",
+            "C-27",
+            "B-49",
+            "C-50"
+          ],
+          "business_name": "shelf_code",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "table_name": "warehouses",
+      "business_name": "warehouses",
+      "description": "",
+      "primary_key": "warehouse_id",
+      "columns": [
+        {
+          "column_name": "warehouse_id",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": true,
+          "sample_values": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "business_name": "warehouse_id",
+          "description": ""
+        },
+        {
+          "column_name": "name",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "华东仓(上海)",
+            "华南仓(广州)",
+            "华北仓(北京)",
+            "西南仓(成都)",
+            "华中仓(武汉)"
+          ],
+          "business_name": "name",
+          "description": ""
+        },
+        {
+          "column_name": "city",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "上海",
+            "广州",
+            "北京",
+            "成都",
+            "武汉"
+          ],
+          "business_name": "city",
+          "description": ""
+        },
+        {
+          "column_name": "province",
+          "type": "TEXT",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            "上海",
+            "广东",
+            "北京",
+            "四川",
+            "湖北"
+          ],
+          "business_name": "province",
+          "description": ""
+        },
+        {
+          "column_name": "capacity",
+          "type": "INTEGER",
+          "not_null": false,
+          "default_value": null,
+          "is_primary_key": false,
+          "sample_values": [
+            15000,
+            12000,
+            10000,
+            8000,
+            9000
+          ],
+          "business_name": "capacity",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "left_table": "coupons",
+      "left_column": "coupon_id",
+      "right_table": "coupon_usage",
+      "right_column": "coupon_id",
+      "join_condition": "coupons.coupon_id = coupon_usage.coupon_id",
+      "description": "coupons 和 coupon_usage 通过 coupon_id 关联"
+    },
+    {
+      "left_table": "customers",
+      "left_column": "customer_id",
+      "right_table": "customer_addresses",
+      "right_column": "customer_id",
+      "join_condition": "customers.customer_id = customer_addresses.customer_id",
+      "description": "customers 和 customer_addresses 通过 customer_id 关联"
+    },
+    {
+      "left_table": "regions",
+      "left_column": "region_id",
+      "right_table": "customers",
+      "right_column": "region_id",
+      "join_condition": "regions.region_id = customers.region_id",
+      "description": "regions 和 customers 通过 region_id 关联"
+    },
+    {
+      "left_table": "regions",
+      "left_column": "region_id",
+      "right_table": "employees",
+      "right_column": "region_id",
+      "join_condition": "regions.region_id = employees.region_id",
+      "description": "regions 和 employees 通过 region_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "inventory_log",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = inventory_log.product_id",
+      "description": "products 和 inventory_log 通过 product_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "order_details",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = order_details.product_id",
+      "description": "products 和 order_details 通过 product_id 关联"
+    },
+    {
+      "left_table": "orders",
+      "left_column": "order_id",
+      "right_table": "order_details",
+      "right_column": "order_id",
+      "join_condition": "orders.order_id = order_details.order_id",
+      "description": "orders 和 order_details 通过 order_id 关联"
+    },
+    {
+      "left_table": "shippers",
+      "left_column": "shipper_id",
+      "right_table": "orders",
+      "right_column": "shipper_id",
+      "join_condition": "shippers.shipper_id = orders.shipper_id",
+      "description": "shippers 和 orders 通过 shipper_id 关联"
+    },
+    {
+      "left_table": "employees",
+      "left_column": "employee_id",
+      "right_table": "orders",
+      "right_column": "employee_id",
+      "join_condition": "employees.employee_id = orders.employee_id",
+      "description": "employees 和 orders 通过 employee_id 关联"
+    },
+    {
+      "left_table": "customers",
+      "left_column": "customer_id",
+      "right_table": "orders",
+      "right_column": "customer_id",
+      "join_condition": "customers.customer_id = orders.customer_id",
+      "description": "customers 和 orders 通过 customer_id 关联"
+    },
+    {
+      "left_table": "orders",
+      "left_column": "order_id",
+      "right_table": "payments",
+      "right_column": "order_id",
+      "join_condition": "orders.order_id = payments.order_id",
+      "description": "orders 和 payments 通过 order_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "product_attributes",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = product_attributes.product_id",
+      "description": "products 和 product_attributes 通过 product_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "product_images",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = product_images.product_id",
+      "description": "products 和 product_images 通过 product_id 关联"
+    },
+    {
+      "left_table": "categories",
+      "left_column": "category_id",
+      "right_table": "products",
+      "right_column": "category_id",
+      "join_condition": "categories.category_id = products.category_id",
+      "description": "categories 和 products 通过 category_id 关联"
+    },
+    {
+      "left_table": "returns",
+      "left_column": "return_id",
+      "right_table": "return_details",
+      "right_column": "return_id",
+      "join_condition": "returns.return_id = return_details.return_id",
+      "description": "returns 和 return_details 通过 return_id 关联"
+    },
+    {
+      "left_table": "orders",
+      "left_column": "order_id",
+      "right_table": "returns",
+      "right_column": "order_id",
+      "join_condition": "orders.order_id = returns.order_id",
+      "description": "orders 和 returns 通过 order_id 关联"
+    },
+    {
+      "left_table": "customers",
+      "left_column": "customer_id",
+      "right_table": "reviews",
+      "right_column": "customer_id",
+      "join_condition": "customers.customer_id = reviews.customer_id",
+      "description": "customers 和 reviews 通过 customer_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "reviews",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = reviews.product_id",
+      "description": "products 和 reviews 通过 product_id 关联"
+    },
+    {
+      "left_table": "orders",
+      "left_column": "order_id",
+      "right_table": "shipping_tracking",
+      "right_column": "order_id",
+      "join_condition": "orders.order_id = shipping_tracking.order_id",
+      "description": "orders 和 shipping_tracking 通过 order_id 关联"
+    },
+    {
+      "left_table": "customers",
+      "left_column": "customer_id",
+      "right_table": "shopping_cart",
+      "right_column": "customer_id",
+      "join_condition": "customers.customer_id = shopping_cart.customer_id",
+      "description": "customers 和 shopping_cart 通过 customer_id 关联"
+    },
+    {
+      "left_table": "products",
+      "left_column": "product_id",
+      "right_table": "warehouse_inventory",
+      "right_column": "product_id",
+      "join_condition": "products.product_id = warehouse_inventory.product_id",
+      "description": "products 和 warehouse_inventory 通过 product_id 关联"
+    },
+    {
+      "left_table": "warehouses",
+      "left_column": "warehouse_id",
+      "right_table": "warehouse_inventory",
+      "right_column": "warehouse_id",
+      "join_condition": "warehouses.warehouse_id = warehouse_inventory.warehouse_id",
+      "description": "warehouses 和 warehouse_inventory 通过 warehouse_id 关联"
+    }
+  ]
+}

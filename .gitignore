@@ -1,0 +1,47 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python caches and test artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.iml
+
+# Local agent/tooling state
+.claude/
+.superpowers/
+
+# Runtime/generated data
+chroma_data/
+output/*
+!output/comparison.json
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated presentation scratch file
+presentation.html

@@ -1,0 +1,486 @@
+{
+  "dataset": "ecommerce_eval",
+  "total": 60,
+  "questions": [
+    {
+      "id": 1,
+      "question": "一共有多少位客户？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM customers",
+      "order_sensitive": false
+    },
+    {
+      "id": 2,
+      "question": "有多少种商品？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM products",
+      "order_sensitive": false
+    },
+    {
+      "id": 3,
+      "question": "一共有多少笔订单？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM orders",
+      "order_sensitive": false
+    },
+    {
+      "id": 4,
+      "question": "有多少个商品分类？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM categories",
+      "order_sensitive": false
+    },
+    {
+      "id": 5,
+      "question": "有多少家物流公司？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM shippers",
+      "order_sensitive": false
+    },
+    {
+      "id": 6,
+      "question": "评价数量是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM reviews",
+      "order_sensitive": false
+    },
+    {
+      "id": 7,
+      "question": "评级为5星的评价有多少条？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM reviews WHERE rating=5",
+      "order_sensitive": false
+    },
+    {
+      "id": 8,
+      "question": "女性客户有多少位？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM customers WHERE gender='女'",
+      "order_sensitive": false
+    },
+    {
+      "id": 9,
+      "question": "商品的平均单价是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT AVG(unit_price) FROM products",
+      "order_sensitive": false
+    },
+    {
+      "id": 10,
+      "question": "员工的平均工资是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT AVG(salary) FROM employees",
+      "order_sensitive": false
+    },
+    {
+      "id": 11,
+      "question": "每个地区的客户数量是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT r.name, COUNT(c.customer_id) FROM customers c JOIN regions r ON c.region_id=r.region_id GROUP BY r.name ORDER BY COUNT(c.customer_id) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 12,
+      "question": "价格超过1000元的商品有哪些？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT name, unit_price FROM products WHERE unit_price>1000 ORDER BY unit_price DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 13,
+      "question": "已完成的订单有多少笔？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM orders WHERE status='已完成'",
+      "order_sensitive": false
+    },
+    {
+      "id": 14,
+      "question": "电子产品类的商品有多少个？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM products p JOIN categories c ON p.category_id=c.category_id WHERE c.name='电子产品'",
+      "order_sensitive": false
+    },
+    {
+      "id": 15,
+      "question": "每个商品分类的商品数量是多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT c.name, COUNT(p.product_id) FROM categories c JOIN products p ON c.category_id=p.category_id GROUP BY c.name ORDER BY COUNT(p.product_id) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 16,
+      "question": "消费总额排名前5的客户是谁？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT c.name, SUM(o.total_amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id ORDER BY SUM(o.total_amount) DESC LIMIT 5",
+      "order_sensitive": true
+    },
+    {
+      "id": 17,
+      "question": "每个地区的订单总金额是多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT r.name, SUM(o.total_amount) FROM orders o JOIN customers c ON o.customer_id=c.customer_id JOIN regions r ON c.region_id=r.region_id GROUP BY r.name ORDER BY SUM(o.total_amount) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 18,
+      "question": "评分最高的10个商品是哪些？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT p.name, AVG(r.rating) FROM products p JOIN reviews r ON p.product_id=r.product_id GROUP BY p.product_id ORDER BY AVG(r.rating) DESC LIMIT 10",
+      "order_sensitive": true
+    },
+    {
+      "id": 19,
+      "question": "每个部门有多少员工？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT department, COUNT(*) FROM employees GROUP BY department ORDER BY COUNT(*) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 20,
+      "question": "各种支付方式的使用次数？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT pay_method, COUNT(*) FROM payments GROUP BY pay_method ORDER BY COUNT(*) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 21,
+      "question": "每个会员等级的客户数量是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT vip_level, COUNT(*) FROM customers GROUP BY vip_level ORDER BY COUNT(*) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 22,
+      "question": "被取消的订单有多少笔？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM orders WHERE status='已取消'",
+      "order_sensitive": false
+    },
+    {
+      "id": 23,
+      "question": "销售额最高的商品前5名？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT p.name, SUM(od.unit_price*od.quantity*(1-od.discount)) FROM products p JOIN order_details od ON p.product_id=od.product_id GROUP BY p.product_id ORDER BY SUM(od.unit_price*od.quantity*(1-od.discount)) DESC LIMIT 5",
+      "order_sensitive": true
+    },
+    {
+      "id": 24,
+      "question": "每种物流公司的订单数是多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT s.name, COUNT(o.order_id) FROM shippers s JOIN orders o ON s.shipper_id=o.shipper_id GROUP BY s.name ORDER BY COUNT(o.order_id) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 25,
+      "question": "每个供应商供应的商品数量？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT s.name, COUNT(p.product_id) FROM suppliers s JOIN products p ON s.supplier_id=p.supplier_id GROUP BY s.supplier_id ORDER BY COUNT(p.product_id) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 26,
+      "question": "各品类商品的销售额排名？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT c.name, SUM(od.unit_price*od.quantity*(1-od.discount)) FROM categories c JOIN products p ON c.category_id=p.category_id JOIN order_details od ON p.product_id=od.product_id GROUP BY c.category_id ORDER BY SUM(od.unit_price*od.quantity*(1-od.discount)) DESC",
+      "order_sensitive": true
+    },
+    {
+      "id": 27,
+      "question": "过去一年每月的订单量是多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT strftime('%Y-%m', order_date) AS month, COUNT(*) FROM orders WHERE order_date>=DATE('now','-1 year') GROUP BY month ORDER BY month",
+      "order_sensitive": false
+    },
+    {
+      "id": 28,
+      "question": "消费最高的10个客户分别买了哪些品类？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "SELECT c.name AS category, COUNT(od.detail_id) FROM categories c JOIN products p ON c.category_id=p.category_id JOIN order_details od ON p.product_id=od.product_id WHERE od.order_id IN (SELECT o.order_id FROM orders o WHERE o.customer_id IN (SELECT customer_id FROM orders GROUP BY customer_id ORDER BY SUM(total_amount) DESC LIMIT 10)) GROUP BY c.category_id ORDER BY COUNT(od.detail_id) DESC",
+      "order_sensitive": true
+    },
+    {
+      "id": 29,
+      "question": "比平均消费额高的客户住在哪些城市？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "SELECT c.city, SUM(o.total_amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id HAVING SUM(o.total_amount)>(SELECT AVG(total) FROM (SELECT SUM(total_amount) AS total FROM orders GROUP BY customer_id))",
+      "order_sensitive": false
+    },
+    {
+      "id": 30,
+      "question": "各评级的订单平均金额是多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT r.rating, AVG(o.total_amount) FROM reviews r JOIN products p ON r.product_id=p.product_id JOIN order_details od ON p.product_id=od.product_id JOIN orders o ON od.order_id=o.order_id GROUP BY r.rating ORDER BY r.rating",
+      "order_sensitive": false
+    },
+    {
+      "id": 31,
+      "question": "有多少位男性客户？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM customers WHERE gender='男'",
+      "order_sensitive": false
+    },
+    {
+      "id": 32,
+      "question": "金卡会员有多少人？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM customers WHERE vip_level='金卡'",
+      "order_sensitive": false
+    },
+    {
+      "id": 33,
+      "question": "退货表中有多少条退货记录？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM returns",
+      "order_sensitive": false
+    },
+    {
+      "id": 34,
+      "question": "物流公司有几家？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM shippers",
+      "order_sensitive": false
+    },
+    {
+      "id": 35,
+      "question": "客户平均年龄是多少？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT AVG(age) FROM customers",
+      "order_sensitive": false
+    },
+    {
+      "id": 36,
+      "question": "最贵的10个商品是哪些？按价格从高到低",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT name, unit_price FROM products ORDER BY unit_price DESC LIMIT 10",
+      "order_sensitive": true
+    },
+    {
+      "id": 37,
+      "question": "库存低于10的商品有哪些？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT name, stock FROM products WHERE stock<10 ORDER BY stock",
+      "order_sensitive": false
+    },
+    {
+      "id": 38,
+      "question": "技术部有多少员工？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM employees WHERE department='技术部'",
+      "order_sensitive": false
+    },
+    {
+      "id": 39,
+      "question": "使用微信支付的订单有多少笔？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(DISTINCT order_id) FROM payments WHERE pay_method='微信支付'",
+      "order_sensitive": false
+    },
+    {
+      "id": 40,
+      "question": "每个物流公司配送了多少订单？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT s.name, COUNT(o.order_id) FROM shippers s LEFT JOIN orders o ON s.shipper_id=o.shipper_id GROUP BY s.name",
+      "order_sensitive": false
+    },
+    {
+      "id": 41,
+      "question": "销售额最高的3个商品品类是哪些？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT c.name, SUM(od.unit_price*od.quantity*(1-od.discount)) FROM categories c JOIN products p ON c.category_id=p.category_id JOIN order_details od ON p.product_id=od.product_id GROUP BY c.category_id ORDER BY SUM(od.unit_price*od.quantity*(1-od.discount)) DESC LIMIT 3",
+      "order_sensitive": true
+    },
+    {
+      "id": 42,
+      "question": "平均评分低于3分的商品有哪些？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT p.name, AVG(r.rating) FROM products p JOIN reviews r ON p.product_id=r.product_id GROUP BY p.product_id HAVING AVG(r.rating)<3",
+      "order_sensitive": false
+    },
+    {
+      "id": 43,
+      "question": "每个支付方式的订单数和总金额？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT pay_method, COUNT(DISTINCT order_id), SUM(amount) FROM payments WHERE status='成功' GROUP BY pay_method",
+      "order_sensitive": false
+    },
+    {
+      "id": 44,
+      "question": "上月新增了多少客户？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM customers WHERE register_date>=DATE('now','-1 month')",
+      "order_sensitive": false
+    },
+    {
+      "id": 45,
+      "question": "没有评价的商品有多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(*) FROM products p WHERE NOT EXISTS (SELECT 1 FROM reviews r WHERE r.product_id=p.product_id)",
+      "order_sensitive": false
+    },
+    {
+      "id": 46,
+      "question": "每个客户的平均订单金额？列出前10",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT c.name, AVG(o.total_amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id ORDER BY AVG(o.total_amount) DESC LIMIT 10",
+      "order_sensitive": true
+    },
+    {
+      "id": 47,
+      "question": "今年已完成订单的总金额？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT SUM(total_amount) FROM orders WHERE status='已完成' AND order_date>=DATE('now','start of year')",
+      "order_sensitive": false
+    },
+    {
+      "id": 48,
+      "question": "被退货次数最多的5个商品？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT p.name, COUNT(r.return_id) AS return_count FROM products p JOIN return_details rd ON p.product_id=rd.product_id JOIN returns r ON rd.return_id=r.return_id GROUP BY p.product_id ORDER BY return_count DESC LIMIT 5",
+      "order_sensitive": true
+    },
+    {
+      "id": 49,
+      "question": "男女客户人数统计",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT gender, COUNT(*) FROM customers GROUP BY gender",
+      "order_sensitive": false
+    },
+    {
+      "id": 50,
+      "question": "各职级员工人数？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT title, COUNT(*) FROM employees GROUP BY title ORDER BY COUNT(*) DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 51,
+      "question": "华北地区的客户消费总额？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT SUM(o.total_amount) FROM orders o JOIN customers c ON o.customer_id=c.customer_id JOIN regions r ON c.region_id=r.region_id WHERE r.name='华北'",
+      "order_sensitive": false
+    },
+    {
+      "id": 52,
+      "question": "每个供应商供应了多少种商品和多少类品类？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT s.name, COUNT(p.product_id) AS product_count, COUNT(DISTINCT p.category_id) AS category_count FROM suppliers s JOIN products p ON s.supplier_id=p.supplier_id GROUP BY s.supplier_id ORDER BY product_count DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 53,
+      "question": "被搜索最多的10个关键词？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT keyword, COUNT(*) FROM search_logs GROUP BY keyword ORDER BY COUNT(*) DESC LIMIT 10",
+      "order_sensitive": true
+    },
+    {
+      "id": 54,
+      "question": "哪个仓库存储的商品种类最多？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT w.name, COUNT(DISTINCT wi.product_id) FROM warehouses w JOIN warehouse_inventory wi ON w.warehouse_id=wi.warehouse_id GROUP BY w.warehouse_id ORDER BY COUNT(DISTINCT wi.product_id) DESC LIMIT 1",
+      "order_sensitive": true
+    },
+    {
+      "id": 55,
+      "question": "使用过优惠券的客户有多少？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT COUNT(DISTINCT customer_id) FROM coupon_usage",
+      "order_sensitive": false
+    },
+    {
+      "id": 56,
+      "question": "平均每笔订单包含几个商品？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT AVG(item_count) FROM (SELECT order_id, SUM(quantity) AS item_count FROM order_details GROUP BY order_id)",
+      "order_sensitive": false
+    },
+    {
+      "id": 57,
+      "question": "各评分等级的数量分布？",
+      "difficulty": "simple",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT rating, COUNT(*) FROM reviews GROUP BY rating ORDER BY rating",
+      "order_sensitive": false
+    },
+    {
+      "id": 58,
+      "question": "各物流公司已签收率？",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
+      "gold_sql": "SELECT s.name, COUNT(DISTINCT o.order_id), SUM(CASE WHEN st.status='已签收' THEN 1 ELSE 0 END)*100.0/COUNT(DISTINCT o.order_id) FROM shippers s JOIN orders o ON s.shipper_id=o.shipper_id JOIN shipping_tracking st ON o.order_id=st.order_id GROUP BY s.name",
+      "order_sensitive": false
+    },
+    {
+      "id": 59,
+      "question": "价格高于品类均价的商品有哪些？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "SELECT p.name, p.unit_price FROM products p WHERE p.unit_price>(SELECT AVG(unit_price) FROM products WHERE category_id=p.category_id) ORDER BY p.unit_price DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 60,
+      "question": "过去一年每个月的新增客户数和订单量？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "SELECT strftime('%Y-%m', c.register_date) AS month, COUNT(c.customer_id), COUNT(DISTINCT o.order_id) FROM customers c LEFT JOIN orders o ON strftime('%Y-%m', c.register_date)=strftime('%Y-%m', o.order_date) WHERE c.register_date>=DATE('now','-1 year') GROUP BY month ORDER BY month",
+      "order_sensitive": false
+    }
+  ]
+}

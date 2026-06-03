@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-06-03 16:27:23 CST",
+  "generated_at": "2026-06-03 22:19:27 CST",
   "cross_model": [
     {
       "model": "deepseek_v4_flash",
-      "tag": "v7",
-      "evaluated_at": "2026-06-03 16:27:23 CST",
-      "accuracy": 90.0,
-      "passed": 54,
+      "tag": "v8",
+      "evaluated_at": "2026-06-03 22:19:27 CST",
+      "accuracy": 91.7,
+      "passed": 55,
       "total": 60,
-      "avg_time_sec": 40.6,
+      "avg_time_sec": 44.9,
       "tokens": {
         "calls": 375,
-        "input_tokens": 597126,
-        "output_tokens": 109743,
-        "total_tokens": 706869,
-        "prompt_chars": 1431642
+        "input_tokens": 597045,
+        "output_tokens": 108087,
+        "total_tokens": 705132,
+        "prompt_chars": 1433145
       },
       "by_difficulty": {
         "simple": {
-          "accuracy": 96.6,
-          "passed": 28,
+          "accuracy": 100.0,
+          "passed": 29,
           "total": 29
         },
         "medium": {
@@ -170,12 +170,12 @@
   "by_model_versions": {
     "deepseek_v4_flash": [
       {
-        "tag": "v7",
-        "accuracy": 90.0,
-        "simple_pct": 96.6,
+        "tag": "v8",
+        "accuracy": 91.7,
+        "simple_pct": 100.0,
         "medium_pct": 85.2,
-        "tokens": 706869,
-        "avg_time": 40.6
+        "tokens": 705132,
+        "avg_time": 44.9
       },
       {
         "tag": "v1",

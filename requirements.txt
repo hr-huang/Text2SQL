@@ -9,3 +9,4 @@ langgraph>=1.0
 langgraph-checkpoint>=2.0
 chromadb
 pytest
+faker

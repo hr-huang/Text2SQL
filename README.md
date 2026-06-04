@@ -1,8 +1,8 @@
 # Enterprise Text2SQL
 
-Enterprise Text2SQL 是一个面向企业数据库的自然语言查询系统。用户输入中文问题后，系统会检索相关 Schema、生成 SQL、执行语义 Review、做 AST 安全校验、只读执行查询，并在失败时尝试修复，前端会实时展示整条 LangGraph 工作流的节点状态。
+Enterprise Text2SQL 是一个企业数据库自然语言查询项目。用户输入中文问题，系统会检索相关 Schema、生成 SQL、执行 Review、安全校验、只读查询，并把 LangGraph 工作流节点实时展示到前端。
 
-这个项目不是一个只靠 Prompt 的演示，而是把 Text2SQL 做成一个可评测、可追踪、有安全边界、有错误恢复路径的工程系统。
+默认项目跑的是仓库内置的 SQLite 电商 demo。别人 clone 之后可以直接初始化 demo 数据库并体验完整链路；如果要接自己的数据库，需要补数据源适配和 Schema Catalog，不是只跑脚本就能自动连接任意数据库。
 
 <p align="center">
   <a href="docs/assets/demo-flow-wide.svg">
@@ -10,7 +10,17 @@ Enterprise Text2SQL 是一个面向企业数据库的自然语言查询系统。
   </a>
 </p>
 
-## 项目结果
+## 能做什么
+
+- 把自然语言问题转换为只读 SQL 查询。
+- 用 LangGraph 拆分意图识别、复杂度分类、Schema 检索、SQL 生成、Review、安全校验、执行、修复和回答生成。
+- 用 `sqlglot` 做 AST 级 SQL 安全校验，只允许单条 `SELECT`，拒绝写操作、DDL、多语句和候选表外查询。
+- 用 Review Agent 在执行前检查业务语义、字段使用、JOIN 路径、聚合粒度和时间函数。
+- 用 Repair Agent 在 SQL 执行失败后尝试查 Schema、改写 SQL 并重试。
+- 用 Server-Sent Events 把每个工作流节点的状态、SQL、回答和结果预览推到前端。
+- 用固定评测集计算 Execution Accuracy，避免只靠主观 demo 判断效果。
+
+## 当前效果
 
 固定评测集共 60 题，包含 29 道简单题、27 道中等题和 4 道复杂题。核心指标是 Execution Accuracy：生成 SQL 的执行结果必须和 `gold_sql` 的执行结果一致才算通过。
 
@@ -21,92 +31,66 @@ Enterprise Text2SQL 是一个面向企业数据库的自然语言查询系统。
 | MiMo 2.5 Flash | v2 | 80.0% | 48 / 60 | 28 / 29 | 20 / 27 | 0 / 4 | 40.1s |
 | MiMo Flash | v1 | 78.3% | 47 / 60 | 28 / 29 | 19 / 27 | 0 / 4 | 61.7s |
 
-从 v1 到 v8 的主要提升：
+完整评测说明见 [docs/EVALUATION.md](docs/EVALUATION.md)，跨模型摘要见 [output/comparison.json](output/comparison.json)。
 
-- 总正确率：**80.0% -> 91.7%**
-- 简单题：**28 / 29 -> 29 / 29**
-- 中等题：**20 / 27 -> 23 / 27**
-- 复杂题：**0 / 4 -> 3 / 4**
+## 快速开始：跑内置 demo
 
-完整评测说明见 [docs/EVALUATION.md](docs/EVALUATION.md)，跨模型摘要保存在 [output/comparison.json](output/comparison.json)。
+### 1. 创建环境并安装依赖
 
-## 核心能力
+Windows PowerShell：
 
-- **LangGraph 工作流**：用 StateGraph 明确拆分意图识别、复杂度分类、Schema 检索、SQL 生成、Review、安全校验、执行、修复和回答生成。
-- **两级 Schema RAG**：小库直接返回完整 Schema，大库走 ChromaDB + BGE-M3 embedding，先召回表，再召回字段。
-- **Review Agent**：在 SQL 进入数据库前检查业务语义、字段使用、JOIN 路径、聚合粒度和时间函数。
-- **AST 级 SQL 安全校验**：基于 `sqlglot` 解析 SQL，只允许单条 `SELECT`，拒绝写操作、DDL、多语句和候选表外查询。
-- **Repair Agent**：执行失败后可查 Schema、改写 SQL、重试执行，达到上限后返回可解释失败原因。
-- **SSE 实时链路展示**：前端通过 Server-Sent Events 展示每个工作流节点的状态、SQL、回答、置信度和结果预览。
-- **可复现评测**：内置 60 题评测集和跨模型对比脚本，避免只凭主观 demo 判断效果。
-
-## 技术栈
-
-| 层级 | 技术 |
-| --- | --- |
-| Workflow | LangGraph StateGraph |
-| API | FastAPI, Server-Sent Events |
-| LLM | OpenAI-compatible API, Function Calling |
-| Schema 检索 | ChromaDB, BGE-M3 embedding, Schema hash cache |
-| SQL 安全 | sqlglot AST validation |
-| 数据库 | SQLite demo, readonly execution layer |
-| 前端 | HTML, CSS, JavaScript, SVG flow trace |
-| 评测 | 60-question execution-accuracy benchmark |
-
-## 系统架构
-
-```mermaid
-flowchart LR
-    User[User Question] --> API[FastAPI + SSE]
-    API --> Graph[LangGraph Workflow]
-    Graph --> Schema[Schema Retrieval]
-    Schema --> RAG[Table RAG + Column RAG]
-    RAG --> Gen[SQL Generation]
-    Gen --> Review[Review Agent]
-    Review --> Validate[sqlglot AST Validation]
-    Validate --> Execute[Readonly SQL Execution]
-    Execute --> Answer[Answer Generation]
-    Execute -- error --> Repair[Repair Agent]
-    Repair --> Execute
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-主工作流：
-
-```mermaid
-flowchart TD
-    START([START]) --> Intent[detect_intent]
-    Intent -- non-data --> NonData[answer_non_data]
-    Intent -- data --> Classify[classify]
-    Classify -- simple / medium --> Semantic[semantic]
-    Classify -- complex --> Decompose[decompose]
-    Decompose --> Orchestrator[orchestrator]
-    Semantic --> Schema[schema]
-    Schema --> SQLGen[sql_gen]
-    SQLGen --> Review[sql_review]
-    Review --> Validate[validate]
-    Validate -- invalid --> ValidationFailed[answer_validation_failed]
-    Validate -- valid --> Execute[execute]
-    Execute -- success --> Answer[answer]
-    Execute -- failed, retryable --> Repair[sql_repair]
-    Repair -- repaired --> Execute
-    Repair -- give up --> ExecFailed[answer_exec_failed]
-```
-
-## 本地运行
+macOS / Linux：
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
 
-copy .env.example .env
-# 在 .env 中填写 OpenAI-compatible LLM endpoint 和 API key
+### 2. 配置 LLM
 
+复制环境变量模板：
+
+```powershell
+Copy-Item .env.example .env
+```
+
+在 `.env` 里填写 OpenAI-compatible endpoint：
+
+```env
+LLM_PRESET=deepseek_v4_flash
+DEEPSEEK_V4_FLASH_KEY=your_api_key_here
+DEEPSEEK_V4_FLASH_URL=https://api.example.com/v1
+DEEPSEEK_V4_FLASH_MODEL=deepseek-v4-flash
+```
+
+项目通过 OpenAI-compatible API 调 LLM，所以只要服务兼容 OpenAI Chat Completions 风格，就可以接入。
+
+### 3. 初始化 demo 数据库和 Schema Catalog
+
+```powershell
 python scripts/init_ecommerce_db.py
 python scripts/build_schema_catalog.py
+```
 
+这两步会生成：
+
+- `data/ecommerce.db`：内置 SQLite 电商 demo 数据库。
+- `data/schema_catalog.json`：Text2SQL 检索和 Prompt 构建使用的 Schema 目录。
+
+### 4. 启动服务
+
+```powershell
 uvicorn app.main:app --reload
 ```
 
-打开演示页面：
+打开：
 
 ```text
 http://localhost:8000/demo
@@ -118,16 +102,16 @@ http://localhost:8000/demo
 http://localhost:8000/health
 ```
 
-示例问题：
+可以试这些问题：
 
 - 销售额最高的前 10 个商品是什么？
 - 各品类商品数量占比是多少？
 - 按月份统计下单数量趋势。
 - 每个地区的客户数量是多少？
 
-## API
+## API 使用
 
-### 普通请求
+### 同步查询
 
 ```http
 POST /api/text2sql
@@ -153,14 +137,14 @@ Content-Type: application/json
 | `warnings` | SQL 或执行阶段产生的警告 |
 | `debug_trace` | 工作流节点调试链路 |
 
-### 流式请求
+### 流式查询
 
 ```http
 POST /api/text2sql/stream
 Content-Type: application/json
 ```
 
-流式接口返回 `text/event-stream`，前端用它实时点亮工作流节点，并展示 SQL、回答、结果行数和中间状态。
+返回 `text/event-stream`。前端用这个接口实时展示工作流节点、SQL、回答、结果行数和中间状态。
 
 ### Schema 浏览
 
@@ -168,38 +152,78 @@ Content-Type: application/json
 GET /api/schema?datasource_id=ecommerce_db
 ```
 
-该接口返回数据源中的表、字段、主键、样例值和估算行数，用于前端 Schema 浏览器。
+返回数据源中的表、字段、主键、样例值和估算行数，用于前端 Schema 浏览器。
 
 ## 接入自己的数据库
 
-当前仓库内置 SQLite 电商 demo。接入真实数据库时，建议按这个顺序做：
+当前代码默认只配置了一个数据源：
 
-1. 在 `app/services/db_service.py` 增加新的 `datasource_id` 和只读连接。
-2. 生成匹配的 `data/schema_catalog.json`，包含表、字段、主键、外键、业务描述和样例值。
-3. 如果 Schema 很大，启动 BGE-M3 embedding 服务并重建向量索引。
-4. 数据库账号必须只有只读权限，不要把安全性寄托在 Prompt 上。
-5. 上线前补一套领域评测集，用 `scripts/run_evaluation.py` 跑执行准确率。
+```python
+self.datasource_map = {
+    "ecommerce_db": project_root / "data" / "ecommerce.db",
+}
+```
 
-## 评测复现
+所以，接自己的数据库分两种情况。
 
-```bash
-python scripts/init_ecommerce_db.py
-python scripts/build_schema_catalog.py
+### 情况 A：你的数据库也是 SQLite
+
+如果你已经有一个 SQLite 文件，例如 `data/my_company.db`：
+
+1. 把数据库文件放到项目目录，例如 `data/my_company.db`。
+2. 生成 Schema Catalog：
+
+   ```powershell
+   python scripts/build_schema_catalog.py data/my_company.db my_company_db
+   ```
+
+3. 在 [app/services/db_service.py](app/services/db_service.py) 里添加数据源：
+
+   ```python
+   self.datasource_map = {
+       "ecommerce_db": project_root / "data" / "ecommerce.db",
+       "my_company_db": project_root / "data" / "my_company.db",
+   }
+   ```
+
+4. 请求时把 `datasource_id` 改成 `my_company_db`。
+
+注意：脚本只能自动提取表名、字段、主键、外键和样例值。为了让 Text2SQL 更准，建议人工补充 `data/schema_catalog.json` 里的 `business_name`、`description`、关系说明和业务口径。
+
+### 情况 B：你的数据库是 MySQL、PostgreSQL、SQL Server 等
+
+这不是“跑脚本就能连上”的模式。正确做法是：
+
+1. 在 [app/services/db_service.py](app/services/db_service.py) 里新增只读连接逻辑。
+2. 给每个数据源分配稳定的 `datasource_id`，例如 `finance_prod_readonly`。
+3. 用只读账号连接数据库，账号权限必须限制在查询范围内。
+4. 生成或维护对应的 `data/schema_catalog.json`。
+5. 确认 [app/services/sql_service.py](app/services/sql_service.py) 的 SQL 方言和安全规则适配目标数据库。
+6. 准备自己的评测集，替换或扩展 `data/eval_questions.json`。
+7. 跑评测，确认准确率和失败原因，再给真实用户使用。
+
+建议不要直接拿生产库做首次联调。先准备只读账号、脱敏样例库和小规模评测集。
+
+## 评测
+
+初始化 demo 数据后运行：
+
+```powershell
 python -m scripts.run_evaluation --preset deepseek_v4_flash --tag v8
 python -m scripts.run_evaluation --compare
 ```
 
 仓库保留的核心证据：
 
-- `data/eval_questions.json`：60 道评测题，每题包含 `gold_sql`。
-- `data/schema_catalog.json`：Schema 检索和 Prompt 构建使用的目录。
-- `output/comparison.json`：跨模型、跨版本的精简结果汇总。
+- [data/eval_questions.json](data/eval_questions.json)：60 道评测题，每题包含 `gold_sql`。
+- [data/schema_catalog.json](data/schema_catalog.json)：Schema 检索和 Prompt 构建使用的目录。
+- [output/comparison.json](output/comparison.json)：跨模型、跨版本的精简结果汇总。
 
 逐题大文件是本地生成物，不建议提交到 Git。
 
 ## 测试
 
-```bash
+```powershell
 python -m pytest -q
 python -m compileall app -q
 ```
@@ -211,6 +235,19 @@ python -m compileall app -q
 - Workflow 路由。
 - 结果比较逻辑。
 - 只读执行和 LIMIT 处理。
+
+## 技术栈
+
+| 层级 | 技术 |
+| --- | --- |
+| Workflow | LangGraph StateGraph |
+| API | FastAPI, Server-Sent Events |
+| LLM | OpenAI-compatible API, Function Calling |
+| Schema 检索 | ChromaDB, BGE-M3 embedding, Schema hash cache |
+| SQL 安全 | sqlglot AST validation |
+| 数据库 | SQLite demo, readonly execution layer |
+| 前端 | HTML, CSS, JavaScript, SVG flow trace |
+| 评测 | 60-question execution-accuracy benchmark |
 
 ## 目录结构
 
@@ -229,7 +266,6 @@ data/
   schema_catalog.json
 docs/
   EVALUATION.md
-  INTERVIEW.md
   assets/
 frontend/
   index.html
@@ -242,15 +278,15 @@ scripts/
 tests/
 ```
 
-## 文档入口
+## 文档
 
 - [docs/EVALUATION.md](docs/EVALUATION.md)：评测集、指标、版本对比和复现方式。
 - [docs/assets/](docs/assets/)：README 和演示页面使用的流程图资源。
 
 ## Roadmap
 
+- 增加 MySQL、PostgreSQL 等数据库适配器。
 - 将复杂问题的子问题执行过程也通过 SSE 展示到前端。
-- 增加 SQLite 之外的数据库适配器。
 - 增加 SQL 执行计划检查，提前发现高成本查询。
 - 增加领域评测集生成工具。
 

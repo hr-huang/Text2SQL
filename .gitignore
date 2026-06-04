@@ -26,6 +26,11 @@ ENV/
 .claude/
 .superpowers/
 
+# Local notes and interview prep
+interview/
+docs/INTERVIEW.md
+docs/superpowers/
+
 # Runtime/generated data
 chroma_data/
 output/*

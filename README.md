@@ -245,10 +245,7 @@ tests/
 ## 文档入口
 
 - [docs/EVALUATION.md](docs/EVALUATION.md)：评测集、指标、版本对比和复现方式。
-- [docs/INTERVIEW.md](docs/INTERVIEW.md)：面试讲解材料。
-- [interview/](interview/)：Agent、工具调用、MCP、项目代码映射等面试专题。
-- [docs/superpowers/specs/](docs/superpowers/specs/)：阶段性设计说明。
-- [docs/superpowers/plans/](docs/superpowers/plans/)：阶段性实现计划。
+- [docs/assets/](docs/assets/)：README 和演示页面使用的流程图资源。
 
 ## Roadmap
 

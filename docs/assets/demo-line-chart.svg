@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="Line chart result">
+  <defs>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".32"/><stop offset="1" stop-color="#22d3ee" stop-opacity=".03"/></linearGradient>
+    <style>.bg{fill:#090d16}.panel{fill:#111827;stroke:#26364e;stroke-width:2}.muted{fill:#8d98aa;font-family:Inter,Arial,sans-serif}.txt{fill:#d6dbe7;font-family:Inter,Arial,sans-serif}.line{stroke:#60a5fa;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}.grid{stroke:#26364e;stroke-width:1}.dot{fill:#22d3ee;stroke:#dbeafe;stroke-width:2}</style>
+  </defs>
+  <rect width="900" height="520" rx="18" class="bg"/>
+  <rect x="28" y="28" width="844" height="464" rx="18" class="panel"/>
+  <text x="58" y="72" class="muted" font-size="18" font-weight="800">CHART · MONTHLY ORDER TREND</text>
+  <text x="58" y="106" class="txt" font-size="18">按月份统计下单数量趋势</text>
+  <g transform="translate(92 140)">
+    <path d="M0 280H720M0 210H720M0 140H720M0 70H720M0 0H720" class="grid"/>
+    <path d="M0 0V280H720" stroke="#334155" stroke-width="2" fill="none"/>
+    <path d="M0 230 L90 202 L180 214 L270 168 L360 188 L450 116 L540 138 L630 82 L720 92 L720 280 L0 280 Z" fill="url(#area)"/>
+    <path d="M0 230 L90 202 L180 214 L270 168 L360 188 L450 116 L540 138 L630 82 L720 92" class="line"/>
+    <g>
+      <circle cx="0" cy="230" r="6" class="dot"/><circle cx="90" cy="202" r="6" class="dot"/><circle cx="180" cy="214" r="6" class="dot"/>
+      <circle cx="270" cy="168" r="6" class="dot"/><circle cx="360" cy="188" r="6" class="dot"/><circle cx="450" cy="116" r="6" class="dot"/>
+      <circle cx="540" cy="138" r="6" class="dot"/><circle cx="630" cy="82" r="6" class="dot"/><circle cx="720" cy="92" r="6" class="dot"/>
+    </g>
+    <text x="0" y="318" text-anchor="middle" class="muted" font-size="14">2025-10</text>
+    <text x="270" y="318" text-anchor="middle" class="muted" font-size="14">2026-01</text>
+    <text x="540" y="318" text-anchor="middle" class="muted" font-size="14">2026-04</text>
+    <text x="720" y="318" text-anchor="middle" class="muted" font-size="14">2026-06</text>
+  </g>
+</svg>

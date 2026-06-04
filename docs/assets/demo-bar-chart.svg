@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="Bar chart result">
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+    <style>.bg{fill:#090d16}.panel{fill:#111827;stroke:#26364e;stroke-width:2}.muted{fill:#8d98aa;font-family:Inter,Arial,sans-serif}.txt{fill:#d6dbe7;font-family:Inter,Arial,sans-serif}.grid{stroke:#26364e;stroke-width:1}.bar{fill:url(#bar)}</style>
+  </defs>
+  <rect width="900" height="520" rx="18" class="bg"/>
+  <rect x="28" y="28" width="844" height="464" rx="18" class="panel"/>
+  <text x="58" y="72" class="muted" font-size="18" font-weight="800">CHART · TOP PRODUCTS</text>
+  <text x="58" y="106" class="txt" font-size="18">销售额最高的前 10 个商品</text>
+  <g transform="translate(88 140)">
+    <path d="M0 280H730M0 210H730M0 140H730M0 70H730M0 0H730" class="grid"/>
+    <path d="M0 0V280H730" stroke="#334155" stroke-width="2" fill="none"/>
+    <rect x="34" y="58" width="44" height="222" rx="8" class="bar"/>
+    <rect x="104" y="88" width="44" height="192" rx="8" class="bar"/>
+    <rect x="174" y="106" width="44" height="174" rx="8" class="bar"/>
+    <rect x="244" y="128" width="44" height="152" rx="8" class="bar"/>
+    <rect x="314" y="150" width="44" height="130" rx="8" class="bar"/>
+    <rect x="384" y="166" width="44" height="114" rx="8" class="bar"/>
+    <rect x="454" y="184" width="44" height="96" rx="8" class="bar"/>
+    <rect x="524" y="198" width="44" height="82" rx="8" class="bar"/>
+    <rect x="594" y="212" width="44" height="68" rx="8" class="bar"/>
+    <rect x="664" y="226" width="44" height="54" rx="8" class="bar"/>
+    <text x="56" y="318" text-anchor="middle" class="muted" font-size="13">P01</text>
+    <text x="196" y="318" text-anchor="middle" class="muted" font-size="13">P03</text>
+    <text x="336" y="318" text-anchor="middle" class="muted" font-size="13">P05</text>
+    <text x="476" y="318" text-anchor="middle" class="muted" font-size="13">P07</text>
+    <text x="616" y="318" text-anchor="middle" class="muted" font-size="13">P09</text>
+  </g>
+</svg>

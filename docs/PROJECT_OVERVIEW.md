@@ -59,8 +59,7 @@ AI 做的事（你看不到了，后台跑的）：
 └────────────────────────────────────────────────────┘
                         ↑↓
 ┌────────────────────────────────────────────────────┐
-│  Agent 大脑：LangGraph 编排的 17 个节点              │
-│  （核心，最复杂）                                    │
+│  Agent 大脑：LangGraph 编排的多节点状态机              │
 └────────────────────────────────────────────────────┘
                         ↑↓
 ┌────────────────────────────────────────────────────┐
@@ -119,7 +118,7 @@ AI 做的事（你看不到了，后台跑的）：
 - **Edge**（边）：节点之间的连接
 - **Conditional Edge**（条件边）：根据 state 决定走哪个节点
 
-**17 个节点**（按工作流顺序）：
+**多节点状态机**（按工作流顺序）：
 
 ```
 1.  detect_intent     意图识别：用户问的是数据问题吗？
@@ -252,18 +251,31 @@ RRF 分数:
 
 **自动对比**：跑 AI 的 SQL → 跟标准 SQL 跑出来的结果对比（行集合是否相等）
 
-**失败归因报告**：自动分 9 类
+**失败归因报告**：自动分 7 类
 - Schema 检索失败
 - LLM 用了候选集之外的表
 - 漏必要 JOIN
 - WHERE 过滤列用错
 - SQL 执行报错
 - 复杂题拆解失败
-- ...
+- 其他结果不匹配
 
 ---
 
 ## 🎯 第 3 层：面试官视角的"为什么这么做"
+
+### 架构定位（先说清楚）
+
+这个项目**不是"多 Agent 协作系统"**——后者通常意味着有 Supervisor、Agent 间消息协议、独立 state/message history，这些本项目都没有。
+
+准确的架构定位：
+
+> **LangGraph Agent 工作流 + SQL Review Tool Agent + ReAct Repair Agent + Complex Query Orchestrator**
+
+- **LangGraph 工作流**：17 个功能节点（不含 END），用 Conditional Edge 做意图路由、复杂度分流、执行恢复
+- **SQL Review Tool Agent**：用 Function Calling 调 schema_lookup 工具做语义审查
+- **ReAct Repair Agent**：执行失败时进入推理-行动循环自主诊断
+- **Orchestrator**：复杂问题的子任务编排控制器，自己做拓扑排序和上下文传递
 
 ### 为什么这是 Agent 工程？（不是 ChatGPT 套壳）
 
@@ -271,15 +283,18 @@ RRF 分数:
 
 本项目是 Agent：用户问 → 多步规划 → 调工具 → 反思 → 重试 → 答
 
-**Agent 的 5 大能力**（JD 普遍要求）：
+**Agent 的核心能力**（JD 普遍要求，本项目实现）：
 
 | 能力 | 本项目实现 | 体现位置 |
 |---|---|---|
 | **Tool Use** | Function Calling 调 schema_lookup 工具 | sql_review_node |
 | **Planning** | decompose → orchestrator | 复杂问题路径 |
 | **Reflection** | self_reflection_node 自评 | sql_review 后 |
-| **Memory** | LangGraph State + 9 类归因持久化 | 整个 pipeline |
-| **Observability** | trace_wrapper + 9 类失败报告 | 全程 |
+| **ReAct** | sql_repair_node 推理-行动循环 | 执行失败后 |
+| **Observability** | trace_wrapper + 自动 Bad Case 归因 | 全程 |
+| **State Management** | LangGraph TypedDict 显式状态流转 | 整个 pipeline |
+
+> ⚠️ **本项目没有实现"Agent Memory"**——LangGraph 的 State 是单次 workflow 内的状态管理（context），不是跨会话的长期记忆。要做 Memory 需要 `MemorySaver` / `SqliteSaver` 等 checkpointer + 长期记忆存储，本项目当前未实现。如果简历上写"Memory"会被深问。
 
 ### 关键设计决策
 
@@ -322,6 +337,28 @@ RRF 分数:
 - 失败回放（看 bad cases 时直接看 trace）
 - **实现方式**：LLMService 全局累计 token，每次节点执行前后 snapshot 一次，差值就是该节点消耗；用 perf_counter 算 wall-clock 耗时；装饰器模式自动给每个节点包，不用改业务代码
 
+#### RAG 的真实效果（诚实数据）
+
+修掉静默 fallback bug 后重跑，**准确率持平、token 成本下降 23%**：
+
+| 指标 | 修复前 | 修复后 |
+|---|---|---|
+| Medium 准确率 | 96.3% | 96.3%（持平） |
+| Token 消耗 | 486,205 | 373,267（-23%） |
+
+**诚实结论**：在当前 27 张表规模下，RAG 的价值是**降低 prompt 成本**而非提升准确率——因为全量 schema 也塞得进 prompt。RAG 的准确率优势要到 100+ 张表时才会显现。
+
+**这个观察对面试很有价值**：不要为了用 RAG 而用 RAG，要先量清楚它在你的数据规模下到底带来什么。
+
+#### Tool Use 是真实实现的
+
+| Agent | 工具 | 循环 |
+|---|---|---|
+| SQL Review Agent | `check_schema` / `fix_sql` / `approve_sql` | 单轮决策 |
+| ReAct Repair Agent | `schema_lookup` / `rewrite_sql` / `execute_sql` / `give_up` | 多轮 Thought→Action→Observation，最多 3 次执行 |
+
+工具调用结果回灌进下一轮 prompt（`observations` 列表），是标准 ReAct 模式。这是**真实可验证**的 Tool Use，不是伪装的。
+
 #### 为什么用硅基流动 + DeepSeek 组合？
 
 - **DeepSeek**：chat 主力（生成 SQL、规划、反思）
@@ -331,23 +368,24 @@ RRF 分数:
 
 ### 怎么量化项目价值？（简历可写的数据）
 
-| 指标 | 数值 | 怎么测的 |
+| 指标 | 数值 | 备注 |
 |---|---|---|
-| 加权准确率 | 85.7% → 91.7% | 60 题黄金评测集 |
-| 中等题提升 | 74% → 96% | 同上 |
-| 节点数 | 17 | LangGraph StateGraph |
+| Simple 题准确率 | 97% → 100% | 执行结果等价校验 |
+| Medium 题准确率 | 74% → 96% | 执行结果等价校验 |
 | RAG 阶段数 | 4 | 向量 + BM25 + RRF + Rerank |
-| 失败归因类别 | 9 | 自研分类规则 |
+| Bad Case 归因 | 7 类自动化 | AST + 候选 schema + 执行结果对比 |
 | 平均响应时间 | ~30s/题 | trace 统计 |
-| Docker 镜像 | huanghairui/enterprise-text2sql | 已发布 |
+| Docker 镜像 | huanghairui/enterprise-text2sql:v1.0.1 | 已发布 |
 | GitHub repo | github.com/hr-huang/text2sql | 已推送 |
+
+> ⚠️ **Complex 题（4 道）目前不做最终结果等价校验**，只记录子任务执行状态与失败路径——因为子问题答案可能不唯一。结果等价校验是后续 Roadmap 项。
 
 ### 这个项目最值得讲的一个故事
 
 > 我做了一轮迭代优化，**从数据出发**。
 >
-> 1. 跑完 60 题，发现简单题 97%、中等题 74%、复杂题 50%
-> 2. 用 bad case 归因工具，把 5 道中等题错题分类
+> 1. 跑完 60 题，发现简单题 97%、中等题 74%
+> 2. 用 Bad Case 归因工具，把 5 道中等题错题分类
 > 3. 发现 4 道都是"多表 JOIN 路径选错"或"状态表用错"
 > 4. **针对这 4 类问题**写了 4 个 few-shot 示例加进 prompt
 > 5. 重跑：中等题从 74% 涨到 96%
@@ -377,7 +415,7 @@ RRF 分数:
 > 装饰器模式自动给每个节点包，不用改业务代码。
 > 同样的指标体系前端用 SVG 流程图实时渲染。
 
-**Q4：为什么失败归因要分 9 类？**
+**Q4：为什么失败归因要分类？**
 
 > 不分就只知道"错了"，分了就**知道为什么错**。
 > 用 sqlglot 解析生成的 SQL 和标准 SQL，对比：
@@ -386,6 +424,8 @@ RRF 分数:
 >   - WHERE 列差异（用错表）
 > 然后从 debug_trace 反查具体是哪个节点出问题。
 > 这套体系让"优化"有方向，不靠感觉。
+>
+> 当前实现覆盖 7 类常见失败模式（schema_retrieve_failure / table_out_of_scope / missing_join / wrong_filter / execution_error / complex_decompose_failure / result_mismatch），边界仍在迭代。
 
 **Q5：这个项目最难的部分是什么？**
 
@@ -408,9 +448,9 @@ RRF 分数:
 │        Enterprise Text2SQL Agent             │
 │  "自然语言问数据库，AI 自动写 SQL 查数据"       │
 ├─────────────────────────────────────────────┤
-│ 核心能力: 17 节点 LangGraph Agent             │
-│  • Tool Use  • Planning  • Reflection        │
-│  • ReAct  • Observability  • Evaluation      │
+│ 核心能力: LangGraph 多节点状态机 + 2 个独立 Agent     │
+│  • Tool Use  • Planning  • Reflection  • ReAct      │
+│  • Observability  • Evaluation  • State Management │
 ├─────────────────────────────────────────────┤
 │ 技术栈:                                       │
 │  • LangGraph + FastAPI + 原生前端             │
@@ -418,12 +458,12 @@ RRF 分数:
 │  • ChromaDB + BM25 + bge-m3 + bge-reranker   │
 │  • SQLite + sqlglot + jieba                   │
 ├─────────────────────────────────────────────┤
-│ 成绩: 60 题评测 91.7% 加权准确率               │
-│  (85.7% → 91.7% 三轮迭代)                    │
+│ 成绩: simple 97→100%、medium 74→96%        │
+│  （60 题分层评测，三轮迭代）                    │
 ├─────────────────────────────────────────────┤
 │ 工程化:                                       │
 │  • Docker 一键部署（已发布 Docker Hub）         │
-│  • 9 类失败归因自动报告                        │
+│  • Bad Case 自动归因（7 类）                 │
 │  • 每节点 trace + token 采集 + SVG 可视化     │
 │  • 完整 README + LICENSE + CONTRIBUTING       │
 └─────────────────────────────────────────────┘
@@ -435,7 +475,7 @@ RRF 分数:
 
 > "我做的是一个 Text-to-SQL Agent 系统。核心场景是让非技术人员用自然语言问业务数据库。
 >
-> 架构上用 LangGraph 编排了 17 个节点的 Agent pipeline——从意图识别，到 SQL 生成，到执行，到自然语言回答，每个节点都是独立的纯函数，状态用 TypedDict 显式流转。
+> 架构上用 LangGraph StateGraph 构建了多节点 Agent pipeline——从意图识别、到 SQL 生成、到执行、到自然语言回答，每个节点都是独立的纯函数（state → dict），状态用 TypedDict 显式流转。条件边实现意图路由、复杂度分流、执行失败恢复。
 >
 > 最关键的设计有 5 个：
 >
@@ -447,13 +487,13 @@ RRF 分数:
 >
 > 4. **可观测性**：自己写了 trace_wrapper 装饰器，自动采集每节点耗时 + token 消耗 + 工具调用，前端用 SVG 流程图实时渲染
 >
-> 5. **评测闭环**：建了 60 题黄金评测集，自研 9 类失败归因工具，能定位每一道错题属于哪个阶段
+> 5. **评测闭环**：建了 60 题分层评测集，自研 Bad Case 归因工具（7 类），能定位每一道错题属于哪个阶段
 >
-> **效果**：通过两轮迭代，加权准确率从 85.7% 提升到 91.7%，中等题从 74% 涨到 96%。这个数据我是从跑评测、归因错题、定向改 prompt 拿到的。
+> **效果**：通过两轮迭代，simple 从 97% 涨到 100%，medium 从 74% 涨到 96%。这个数据是从跑评测、归因错题、定向改 prompt 拿到的。
 >
 > **工程化**：Docker 一键部署，镜像已发布到 Docker Hub，GitHub 开源。
 >
-> 这个项目展示了我对 Agent 工程 5 大核心能力的理解：Tool Use、Planning、Reflection、Memory、Observability。"
+> 这个项目展示了我对 Agent 工程核心能力的理解：Tool Use、Planning、Reflection、ReAct、Observability、State Management。**没有声称实现 Agent Memory**——那是不同的工程问题。"
 
 ---
 
@@ -461,7 +501,7 @@ RRF 分数:
 
 | 类别 | 技术 | 作用 |
 |---|---|---|
-| Agent 框架 | LangGraph 1.0+ | 17 节点状态机编排 |
+| Agent 框架 | LangGraph 1.0+ | 多节点状态机编排 |
 | 后端 | FastAPI | 异步 API + SSE 流式 |
 | LLM | DeepSeek / Qwen / Gemini / Kimi / MiMo（12 选 1） | 推理 |
 | Embedding | SiliconFlow BAAI/bge-m3 | 文本向量化 |
@@ -473,5 +513,5 @@ RRF 分数:
 | SQL 工具 | sqlglot | 解析 / 校验 / 注入 LIMIT |
 | 前端 | 原生 HTML/CSS/JS + ECharts | 聊天界面 + 流程图 |
 | 容器化 | Docker + Docker Compose | 一键部署 |
-| 评测 | 自研 60 题黄金集 + 9 类归因 | 离线评估 |
+| 评测 | 自研 60 题分层集 + 7 类 Bad Case 归因 | 离线评估 |
 | Tracing | 自研 trace_wrapper 装饰器 | 每节点耗时 + token |

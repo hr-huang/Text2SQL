@@ -129,14 +129,17 @@ class SchemaService:
     # ══════════════════════════════════════════════════════════════
 
     def _compute_schema_hash(self) -> str | None:
-        """SHA256 of (catalog bytes + embedding model + reranker model).
+        """SHA256 of (catalog bytes + embedding model + reranker model + index version).
 
-        Any change in catalog or model triggers index rebuild.
+        Bump SCHEMA_INDEX_VERSION when the persisted index format changes;
+        this forces a rebuild even if catalog content is identical.
         """
+        SCHEMA_INDEX_VERSION = "v2"  # bumped when col ID format changed to c_table.col
         try:
             raw = self.catalog_path.read_bytes()
             raw += self._emb_model.encode()
             raw += self._rerank_model.encode()
+            raw += SCHEMA_INDEX_VERSION.encode()
             return hashlib.sha256(raw).hexdigest()
         except Exception:
             return None
@@ -326,7 +329,7 @@ class SchemaService:
                     f"类型 {col.get('type', '')}. 样本值: {sample_str}."
                 )
                 col_texts.append(col_text)
-                col_ids.append(f"c_{table['table_name']}_{col['column_name']}")
+                col_ids.append(f"c_{table['table_name']}.{col['column_name']}")
                 col_metas.append({
                     "table_name": table["table_name"],
                     "column_name": col["column_name"],

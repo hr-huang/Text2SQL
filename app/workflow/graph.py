@@ -65,6 +65,19 @@ def route_after_classify(state: Text2SQLState) -> str:
     return "semantic"
 
 
+def route_after_decompose(state: Text2SQLState) -> str:
+    """After decompose: only go to orchestrator if we actually got sub-questions.
+
+    decompose_node returns an empty sub_questions list when the LLM decides the
+    question can be answered with a single SQL. Without this fallback the graph
+    would reach orchestrator, which returns {} for empty sub_questions, and end
+    the run with no SQL and no answer.
+    """
+    if state.get("sub_questions"):
+        return "orchestrator"
+    return "semantic"
+
+
 def route_after_validate(state: Text2SQLState) -> str:
     """After SQL validation: execute if valid, report failure otherwise."""
     if state.get("sql_validation_error"):
@@ -153,8 +166,15 @@ def compile_graph():
             "semantic": "semantic",
         },
     )
-    # decompose → orchestrator → END (complex question path)
-    builder.add_edge("decompose", "orchestrator")
+    # decompose → orchestrator (有子问题) 或 semantic (可用单 SQL 回答，回落单条链路)
+    builder.add_conditional_edges(
+        "decompose",
+        route_after_decompose,
+        {
+            "orchestrator": "orchestrator",
+            "semantic": "semantic",
+        },
+    )
     builder.add_edge("orchestrator", END)
 
     # Serial chain: semantic → schema → sql_gen → sql_review → self_reflection → validate

@@ -95,8 +95,12 @@ def categorize_failure(r: dict) -> str:
     if status == "exec_error" or "syntax error" in status or "no such" in status:
         return "execution_error"
 
-    # 3. 没生成 SQL → 真 schema 检索失败（候选表里就没有相关表）
+    # 3. 没生成 SQL → 要先看走的是哪条路径
     if not generated_sql:
+        visited = {e.get("node") for e in debug if isinstance(e, dict)}
+        # 走了 decompose / orchestrator 说明被判为复杂题，但编排器没产出 SQL
+        if visited & {"decompose", "orchestrator"}:
+            return "complex_decompose_failure"
         return "schema_retrieve_failure"
 
     # 4. 结果不匹配 → 细看 SQL 找根因
@@ -117,10 +121,9 @@ def categorize_failure(r: dict) -> str:
             return "missing_join"
 
         # 4c. WHERE 列用错（如 status 取错表）
-        if gold_where_cols and gen_where_cols and not gen_where_cols.issubset(gold_where_cols | gen_where_cols):
-            # gen 的 WHERE 列和 gold 完全不同
-            if not (gen_where_cols & gold_where_cols):
-                return "wrong_filter"
+        # 判断标准：gen 用了 WHERE 列，但跟 gold 的 WHERE 列**没有任何交集** → 用错
+        if gold_where_cols and gen_where_cols and not (gen_where_cols & gold_where_cols):
+            return "wrong_filter"
 
         # 4d. 兜底：跑通但结果错，找不到明确模式
         return "result_mismatch"

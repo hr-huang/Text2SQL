@@ -1,6 +1,29 @@
 {
-  "generated_at": "2026-08-27 23:11:42 CST",
+  "generated_at": "2026-08-28 18:10:52 CST",
   "cross_model": [
+    {
+      "model": "deepseek_v4_flash",
+      "tag": "tracefix_v3",
+      "evaluated_at": "2026-08-28 18:10:52 CST",
+      "accuracy": 92.6,
+      "passed": 25,
+      "total": 27,
+      "avg_time_sec": 37.3,
+      "tokens": {
+        "calls": 182,
+        "input_tokens": 247829,
+        "output_tokens": 94124,
+        "total_tokens": 341953,
+        "prompt_chars": 550713
+      },
+      "by_difficulty": {
+        "medium": {
+          "accuracy": 92.6,
+          "passed": 25,
+          "total": 27
+        }
+      }
+    },
     {
       "model": "deepseek_v4_flash",
       "tag": "v1",
@@ -101,29 +124,6 @@
       }
     },
     {
-      "model": "deepseek_v4_flash",
-      "tag": "fewshot_v3",
-      "evaluated_at": "2026-08-27 23:11:42 CST",
-      "accuracy": 50.0,
-      "passed": 2,
-      "total": 4,
-      "avg_time_sec": 49.8,
-      "tokens": {
-        "calls": 26,
-        "input_tokens": 44195,
-        "output_tokens": 18483,
-        "total_tokens": 62678,
-        "prompt_chars": 102591
-      },
-      "by_difficulty": {
-        "complex": {
-          "accuracy": 50.0,
-          "passed": 2,
-          "total": 4
-        }
-      }
-    },
-    {
       "model": "gemini_flash",
       "tag": "v2",
       "evaluated_at": "2026-06-02 20:40:04 CST",
@@ -160,20 +160,20 @@
   "by_model_versions": {
     "deepseek_v4_flash": [
       {
+        "tag": "tracefix_v3",
+        "accuracy": 92.6,
+        "simple_pct": 0,
+        "medium_pct": 92.6,
+        "tokens": 341953,
+        "avg_time": 37.3
+      },
+      {
         "tag": "v1",
         "accuracy": 80.0,
         "simple_pct": 96.6,
         "medium_pct": 74.1,
         "tokens": 476271,
         "avg_time": 29.3
-      },
-      {
-        "tag": "fewshot_v3",
-        "accuracy": 50.0,
-        "simple_pct": 0,
-        "medium_pct": 0,
-        "tokens": 62678,
-        "avg_time": 49.8
       }
     ],
     "gemini_flash": [

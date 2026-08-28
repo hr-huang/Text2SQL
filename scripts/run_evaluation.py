@@ -230,6 +230,9 @@ def save_model_output(preset: str, summary: dict, tag: str = ""):
             "elapsed": r.get("elapsed", 0),
             "complexity": r.get("complexity", "?"),
             "error": r.get("error", ""),
+            # 保留 trace（含每节点耗时/token + schema 节点返回的候选表），
+            # analyze_bad_cases.py 依赖它做 table_out_of_scope / missing_join 判定。
+            "debug_trace": r.get("debug_trace", []),
         })
 
     output = {

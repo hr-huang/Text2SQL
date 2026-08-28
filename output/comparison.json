@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-08-28 18:10:52 CST",
+  "generated_at": "2026-08-28 18:52:24 CST",
   "cross_model": [
     {
       "model": "deepseek_v4_flash",
-      "tag": "tracefix_v3",
-      "evaluated_at": "2026-08-28 18:10:52 CST",
-      "accuracy": 92.6,
-      "passed": 25,
-      "total": 27,
-      "avg_time_sec": 37.3,
+      "tag": "deadendfix_v4",
+      "evaluated_at": "2026-08-28 18:52:24 CST",
+      "accuracy": 100.0,
+      "passed": 29,
+      "total": 29,
+      "avg_time_sec": 32.9,
       "tokens": {
-        "calls": 182,
-        "input_tokens": 247829,
-        "output_tokens": 94124,
-        "total_tokens": 341953,
-        "prompt_chars": 550713
+        "calls": 203,
+        "input_tokens": 280527,
+        "output_tokens": 60539,
+        "total_tokens": 341066,
+        "prompt_chars": 624661
       },
       "by_difficulty": {
-        "medium": {
-          "accuracy": 92.6,
-          "passed": 25,
-          "total": 27
+        "simple": {
+          "accuracy": 100.0,
+          "passed": 29,
+          "total": 29
         }
       }
     },
@@ -160,12 +160,12 @@
   "by_model_versions": {
     "deepseek_v4_flash": [
       {
-        "tag": "tracefix_v3",
-        "accuracy": 92.6,
-        "simple_pct": 0,
-        "medium_pct": 92.6,
-        "tokens": 341953,
-        "avg_time": 37.3
+        "tag": "deadendfix_v4",
+        "accuracy": 100.0,
+        "simple_pct": 100.0,
+        "medium_pct": 0,
+        "tokens": 341066,
+        "avg_time": 32.9
       },
       {
         "tag": "v1",

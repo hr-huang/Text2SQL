@@ -99,11 +99,28 @@ AI 会自动：
 
 **迭代轨迹**：
 
-| 迭代 | Simple | Medium | 关键改动 |
-|---|---|---|---|
-| v1 | 97% | 74% | 纯向量 RAG 基线 |
-| + RAG 增强 + 自反思 | 100% | 82% | BM25 + Rerank + RRF + Self-Reflection |
-| + 定向 few-shot | 100% | **96%** | 基于 Bad Case 归因增加 4 道多 JOIN / 状态表示例 |
+| 迭代 | Simple | Medium | Complex | 关键改动 |
+|---|---|---|---|---|
+| v1 | 97% | 74% | — | 纯向量 RAG 基线 |
+| + RAG 增强 + 自反思 | 100% | 82% | 50% | BM25 + Rerank + RRF + Self-Reflection |
+| + 定向 few-shot | 100% | 96% | 50% | 基于 Bad Case 归因增加 4 道多 JOIN / 状态表示例 |
+| **+ 修复编排死路 bug** | **100%** | **96.3%** | **75%** | decompose 无子问题时回落到单 SQL 路径（见下方说明） |
+
+**这个 bug 是什么**：
+
+```
+classify 判为 complex
+    ↓
+decompose: LLM 说"可用单条 SQL 回答" → sub_questions = []
+    ↓
+orchestrator: if not sub_questions: return {}   ← 返回空，产出全空
+    ↓
+graph: orchestrator → END   ← 无任何 SQL、无答案
+```
+
+复杂题被判"能用单 SQL"时**直接掉进死路**。修复方式是在 decompose 后加条件边：没有子问题就回落到单 SQL 路径（`semantic → schema → sql_gen → ...`）。
+
+**为什么值得讲**：这个 bug 同时杀死了 2/27 中等题和 2/4 复杂题，而且因为它"不报错、只是返回空"，很难从表面发现——是**靠 failure attribution + trace 反查**定位到的。
 
 ![Eval results](docs/eval_results.svg)
 
@@ -118,7 +135,7 @@ AI 会自动：
 
 **诚实结论**：在当前 27 张表的规模下，RAG 的价值是**降低 prompt 成本**，而非提升准确率——因为全量 schema 也塞得进 prompt。RAG 的准确率优势要到 100+ 张表、prompt 塞不下时才会显现。
 
-> 这也是个有价值的工程观察：**不要为了用 RAG 而用 RAG**，要先量清楚它在你的数据规模下到底带来什么。
+这也是个有价值的工程观察：**不要为了用 RAG 而用 RAG**，要先量清楚它在你的数据规模下到底带来什么。
 
 ### 🔍 关于 Tool Use：真实实现
 

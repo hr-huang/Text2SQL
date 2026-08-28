@@ -26,6 +26,7 @@
     .value-light { fill: #f1f5f9; font-size: 13px; font-weight: 700; text-anchor: middle; }
     .delta { fill: #4ade80; font-size: 11px; font-weight: 700; text-anchor: middle; }
     .group-label { fill: #cbd5e1; font-size: 12px; font-weight: 700; text-anchor: middle; letter-spacing: 1px; }
+    .note { fill: #94a3b8; font-size: 10px; font-style: italic; }
     .x-label { fill: #94a3b8; font-size: 11px; text-anchor: middle; }
   </style>
 
@@ -92,9 +93,10 @@
   <rect x="605" y="131" width="40" height="269" rx="4" fill="url(#bar3)"/>
   <text x="625" y="151" class="value">96%</text>
   <text x="625" y="123" class="delta">+14</text>
-  <!-- Complex 50%: h=140, y=260 -->
-  <rect x="655" y="260" width="40" height="140" rx="4" fill="url(#bar3)"/>
-  <text x="675" y="280" class="value">50%</text>
+  <!-- Complex 75%: h=210, y=190 -->
+  <rect x="655" y="190" width="40" height="210" rx="4" fill="url(#bar3)"/>
+  <text x="675" y="210" class="value">75%</text>
+  <text x="675" y="182" class="delta">+25</text>
 
   <!-- X-axis labels: centered per group of 3 bars -->
   <text x="175" y="425" class="x-label">Simple · Medium · Complex</text>
@@ -110,4 +112,8 @@
     <rect x="460" y="0" width="14" height="14" rx="3" fill="url(#bar3)"/>
     <text x="480" y="11" class="legend-text">v3: + targeted few-shot prompts</text>
   </g>
+
+  <!-- Note about complex improvement -->
+  <text x="555" y="345" class="note">* Complex 75% 来自修复</text>
+  <text x="555" y="358" class="note">  decompose 死路 bug</text>
 </svg>

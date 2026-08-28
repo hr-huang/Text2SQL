@@ -216,7 +216,11 @@ python scripts/run_evaluation.py --all
 
 结果输出到 `output/<preset>/`，含 `summary.json` 和 `bad_cases.md`。
 
-**当前成绩**（DeepSeek-V4-Flash）：
+**当前成绩**（DeepSeek-V4-Flash，60 题黄金评测集）：
+
+![Evaluation results](docs/eval_results.svg)
+
+上图是三轮优化的演进：v1 纯向量 RAG → v2 加混合检索 + Self-Reflection → v3 加针对性 few-shot。最新一轮的精确数字：
 
 | 难度 | 结果 |
 |---|---|

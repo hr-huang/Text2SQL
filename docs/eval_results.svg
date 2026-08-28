@@ -33,7 +33,7 @@
   <rect x="0" y="0" width="760" height="480" rx="12" fill="url(#bgGrad)"/>
 
   <text x="30" y="40" class="title">Accuracy Across Iterations</text>
-  <text x="30" y="60" class="subtitle">60-question gold eval set · DeepSeek-V4-Flash · weighted overall 85.7% → 91.7%</text>
+  <text x="30" y="60" class="subtitle">60-question gold eval set · DeepSeek-V4-Flash · v1 baseline → v3 current</text>
 
   <!-- Group labels (positioned well above bars) -->
   <text x="175" y="95" class="group-label">v1 baseline</text>
@@ -112,8 +112,4 @@
     <rect x="460" y="0" width="14" height="14" rx="3" fill="url(#bar3)"/>
     <text x="480" y="11" class="legend-text">v3: + targeted few-shot prompts</text>
   </g>
-
-  <!-- Note about complex improvement -->
-  <text x="555" y="345" class="note">* Complex 75% 来自修复</text>
-  <text x="555" y="358" class="note">  decompose 死路 bug</text>
 </svg>

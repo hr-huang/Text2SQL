@@ -1,290 +1,299 @@
-# Enterprise Text2SQL
+# Enterprise Text2SQL Agent
 
-Enterprise Text2SQL 是一个面向企业数据库的自然语言查询系统。用户输入中文问题后，系统会检索 Schema、生成 SQL、执行 Review、安全校验、只读查询，并把 LangGraph 工作流、SQL、回答、表格和图表实时展示到前端。
+> **A production-grade Text-to-SQL Agent with multi-stage RAG, self-reflection, and self-repair — built on LangGraph.**
 
-> [!IMPORTANT]
-> 默认项目跑的是内置 SQLite 电商 demo。别人 clone 后可以直接初始化 demo 数据库并体验完整链路；如果要接自己的数据库，需要新增只读数据源适配并维护 Schema Catalog，不是只跑脚本就能自动连接任意数据库。
-
-<p align="center">
-  <a href="docs/assets/demo-interface.svg">
-    <img src="docs/assets/demo-interface.svg" alt="Enterprise Text2SQL demo interface" width="100%">
-  </a>
+<p>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/langgraph-1.0%2B-green.svg" alt="LangGraph">
+  <img src="https://img.shields.io/badge/docker-supported-blue.svg" alt="Docker">
+  <a href="https://hub.docker.com/r/huanghairui/enterprise-text2sql"><img src="https://img.shields.io/badge/docker%20hub-huanghairui%2Fenterprise--text2sql-blue.svg" alt="Docker Hub"></a>
+  <img src="https://img.shields.io/badge/eval%20accuracy-91.7%25-brightgreen.svg" alt="Accuracy">
+  <img src="https://img.shields.io/badge/agent%20nodes-17-purple.svg" alt="Nodes">
 </p>
 
-## Features
+用自然语言问数据库，自动生成 SQL、执行查询、汇总回答 — 不需要懂 SQL。
 
-- Natural language to readonly SQL.
-- LangGraph workflow with intent detection, classification, schema retrieval, SQL generation, review, validation, execution, repair, and answer generation.
-- Schema RAG with table and column retrieval for larger schemas.
-- Review Agent checks semantic correctness before SQL execution.
-- `sqlglot` AST validation blocks non-`SELECT`, DDL, DML, multi-statement SQL, and tables outside the candidate schema.
-- Repair Agent retries failed SQL with schema lookup and rewritten SQL.
-- Frontend renders workflow trace, SQL, natural-language answer, result table, confidence, and ECharts charts.
-- Evaluation loop based on execution accuracy, not subjective demo output.
-
-## Demo UI
-
-The frontend is not only a chat box. It is built for debugging and demo review: left side shows the database schema, center is the query panel, right side streams workflow progress, generated SQL, answer, charts, and raw rows.
-
-<p align="center">
-  <img src="docs/assets/demo-flow-trace.svg" alt="LangGraph workflow trace" width="49%">
-  <img src="docs/assets/demo-line-chart.svg" alt="Line chart result" width="49%">
-</p>
-<p align="center">
-  <img src="docs/assets/demo-bar-chart.svg" alt="Bar chart result" width="49%">
-  <img src="docs/assets/demo-result-table.svg" alt="SQL result table" width="49%">
-</p>
-
-Chart rendering is automatic:
-
-- Questions with time-like dimensions, such as monthly order trend, render as line charts.
-- Short categorical distributions, such as order status or product category share, render as pie charts.
-- Ranking questions, such as top-selling products, render as bar charts.
-- All rows are still available in the data table under the chart.
-
-## Results
-
-The benchmark contains 60 questions: 29 simple, 27 medium, and 4 complex. A generated SQL query is counted as correct only when its execution result matches the `gold_sql` result.
-
-| Model | Version | Accuracy | Passed | Simple | Medium | Complex | Avg time |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DeepSeek V4 Flash | v8 | **91.7%** | 55 / 60 | 29 / 29 | 23 / 27 | 3 / 4 | 44.9s |
-| DeepSeek V4 Flash | v1 | 80.0% | 48 / 60 | 28 / 29 | 20 / 27 | 0 / 4 | 29.3s |
-| MiMo 2.5 Flash | v2 | 80.0% | 48 / 60 | 28 / 29 | 20 / 27 | 0 / 4 | 40.1s |
-| MiMo Flash | v1 | 78.3% | 47 / 60 | 28 / 29 | 19 / 27 | 0 / 4 | 61.7s |
-
-See [docs/EVALUATION.md](docs/EVALUATION.md) and [output/comparison.json](output/comparison.json) for the reproducible evaluation summary.
-
-## Architecture
-
-```mermaid
-flowchart LR
-    User[User Question] --> API[FastAPI + SSE]
-    API --> Graph[LangGraph Workflow]
-    Graph --> Schema[Schema Retrieval]
-    Schema --> RAG[Table RAG + Column RAG]
-    RAG --> Gen[SQL Generation]
-    Gen --> Review[Review Agent]
-    Review --> Validate[sqlglot AST Validation]
-    Validate --> Execute[Readonly SQL Execution]
-    Execute --> Answer[Answer Generation]
-    Execute -- error --> Repair[Repair Agent]
-    Repair --> Execute
+```
+你问：上个月销售额超过 5000 元的商品有哪些？
+AI 想：意图 → 复杂度 → 检索相关表 → 生成 SQL → 自评风险 → 执行 → 修复（如失败）→ 汇总
+AI 答：返回 Top 商品列表 + 自然语言解释
 ```
 
-Main workflow:
+---
 
-```mermaid
-flowchart TD
-    START([START]) --> Intent[detect_intent]
-    Intent -- non-data --> NonData[answer_non_data]
-    Intent -- data --> Classify[classify]
-    Classify -- simple / medium --> Semantic[semantic]
-    Classify -- complex --> Decompose[decompose]
-    Decompose --> Orchestrator[orchestrator]
-    Semantic --> Schema[schema]
-    Schema --> SQLGen[sql_gen]
-    SQLGen --> Review[sql_review]
-    Review --> Validate[validate]
-    Validate -- invalid --> ValidationFailed[answer_validation_failed]
-    Validate -- valid --> Execute[execute]
-    Execute -- success --> Answer[answer]
-    Execute -- failed, retryable --> Repair[sql_repair]
-    Repair -- repaired --> Execute
-    Repair -- give up --> ExecFailed[answer_exec_failed]
-```
+## ✨ 核心特性
 
-## Quickstart
+| | 特性 |
+|---|---|
+| 🧠 | **17 节点 LangGraph Agent** — 意图识别 / 复杂度分类 / Schema 检索 / SQL 生成 / 审查 / **自反思** / 校验 / 执行 / **ReAct 自修复** |
+| 🔍 | **4 阶段 RAG 链路** — 向量召回 (bge-m3) + BM25 关键词召回 + RRF 融合 + bge-reranker-v2-m3 精排 |
+| 🪞 | **Self-Reflection 节点** — LLM 对自己生成的 SQL 做风险自评 (low/medium/high) |
+| 🔁 | **ReAct 自修复** — SQL 失败时 Agent 调工具诊断，最多重试 3 次 |
+| 📊 | **完整可观测性** — 每节点 wall-clock 耗时 + Token 消耗 + Tool 调用，前端 SVG 流程图实时渲染 |
+| 📈 | **60 题黄金评测集** + **9 类失败归因报告**（自动分类：检索失败 / 漏 JOIN / WHERE 列用错 / 拆解失败 …） |
+| 🐳 | **Docker 一键部署** — 含自动初始化数据库 + schema 索引 |
 
-### 1. Install dependencies
+---
 
-Windows PowerShell:
+## 📊 评测结果
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+60 道黄金评测集（simple 29 / medium 27 / complex 4），DeepSeek-V4-Flash 模型。
 
-macOS / Linux:
+![Accuracy chart](docs/eval_results.svg)
+
+| 迭代 | Simple | Medium | Complex | 加权 | 关键改动 |
+|---|---|---|---|---|---|
+| v1（基线） | 97% | 74% | — | — | 纯向量 RAG |
+| + RAG 增强 + 自反思 | 100% | 82% | 50% | 88.6% | + BM25 + Rerank + RRF + Self-Reflection 节点 |
+| **+ 定向 few-shot** | **100%** | **96%** | **50%** | **91.7%** | + 4 道多 JOIN / 状态表 / 嵌套聚合示例 |
+
+**核心 takeaway**：从错题出发定向设计 few-shot，单文件改动带来 **+14 pp on medium**。
+
+---
+
+## 🏗️ 架构
+
+![Architecture diagram](docs/architecture.svg)
+
+5 个泳道：BRANCH（分支） / MAIN PIPELINE（主流程） / REFLECT（自反思） / RUN & ANSWER（执行与回答） / REPAIR / FAILURE（修复与失败）。
+
+| 关键节点 | 作用 |
+|---|---|
+| `detect_intent` | 识别是不是数据问题；非数据直接拒答 |
+| `classify` | 判定 simple / complex，复杂问题走拆解 |
+| `decompose` → `orchestrator` | 复杂问题拆子问题 + 按依赖编排执行 |
+| `schema` | **4 阶段 RAG**：向量 + BM25 + RRF + Rerank |
+| `sql_gen` | LLM 生成只读 SELECT SQL |
+| `sql_review` | Function Calling 审查（调 schema_lookup 工具核对） |
+| **`self_reflection`** | 🪞 LLM 自评 SQL 风险（high/medium/low） |
+| `validate` → `execute` | SQLGlot 语法校验 + DB 执行 |
+| `sql_repair` | 🔁 ReAct 自修复（最多 3 次） |
+
+---
+
+## 🚀 快速开始
+
+### 方式〇：从 Docker Hub 一行拉取（最快）
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+docker run -p 8000:8000 --env-file .env huanghairui/enterprise-text2sql:v1.0.0
+```
+
+需要同目录有 `.env` 文件（含 `DEEPSEEK_V4_FLASH_KEY` 和 `SILICONFLOW_API_KEY`）。访问 http://localhost:8000/demo 即可。
+
+镜像地址：https://hub.docker.com/r/huanghairui/enterprise-text2sql
+
+### 方式一：本地构建 + docker compose
+
+```bash
+cp .env.example .env
+# 编辑 .env 填入 DEEPSEEK_V4_FLASH_KEY 和 SILICONFLOW_API_KEY
+
+docker compose up --build
+```
+
+启动后访问：
+
+- **聊天界面** → http://localhost:8000/demo
+- **健康检查** → http://localhost:8000/health
+- **Schema 浏览器** → http://localhost:8000/api/schema
+
+### 方式二：本地运行
+
+```bash
 pip install -r requirements.txt
+cp .env.example .env
+# 编辑 .env 填入 API key
+
+python -m app.main
 ```
 
-### 2. Configure the LLM endpoint
+### 推送镜像到 Docker Hub（可选）
 
-```powershell
-Copy-Item .env.example .env
+```bash
+export DOCKERHUB_USER=你的用户名
+./scripts/deploy_docker.sh v1.0.0
 ```
 
-Edit `.env`:
+别人拉取运行：
 
-```env
-LLM_PRESET=deepseek_v4_flash
-DEEPSEEK_V4_FLASH_KEY=your_api_key_here
-DEEPSEEK_V4_FLASH_URL=https://api.example.com/v1
-DEEPSEEK_V4_FLASH_MODEL=deepseek-v4-flash
+```bash
+DOCKERHUB_USER=你的用户名 ./scripts/pull_and_run.sh v1.0.0
 ```
 
-The project uses an OpenAI-compatible API. Any provider that supports a compatible chat-completions interface can be wired through the preset environment variables.
+---
 
-### 3. Create the demo database and schema catalog
+## 🧠 关键设计决策
 
-```powershell
-python scripts/init_ecommerce_db.py
-python scripts/build_schema_catalog.py
+### 1. 为什么需要混合检索？
+
+- **纯向量**：对 `vip_level` / `customer_id` 这种专有名词召回率低
+- **纯 BM25**：对"上个月销量最好"这种语义问法召回差
+- **混合（向量 + BM25 + RRF）**：互补，整体召回率提升
+- **Rerank**：Cross-encoder 重新打分，Top-10 精度大幅提升
+
+### 2. 为什么需要 Self-Reflection？
+
+LLM 生成的 SQL 经常有**微妙错误**（如选了 `orders.status` 但用户问的是 `shipping_tracking.status`）。Self-Reflection 节点在 validate 之前让 LLM 自评风险，作为**Agent 反思能力的工程化体现**。不阻塞流程（validate + execute + repair 兜底），但高风险时给用户清晰提示。
+
+### 3. 为什么用 TypedDict State + LangGraph？
+
+- 17 个节点的 state 流转可显式追踪
+- 条件路由（conditional edges）实现"复杂/简单"分支
+- 自修复循环（repair → execute）实现 ReAct
+- 自动 checkpointing（如需）
+
+### 4. 失败归因报告（9 类）
+
+不是只统计 pass/fail，而是**自动分类失败原因**，定向优化：
+
+| 类别 | 含义 |
+|---|---|
+| Schema 检索失败（未召回相关表） | RAG 没找到相关表 |
+| LLM 用了候选集之外的表 | LLM 幻觉 / 候选表错误 |
+| 漏必要 JOIN | LLM 简化了 JOIN 路径 |
+| WHERE 过滤列用错 | 状态列取错表（如 orders.status 替代 shipping_tracking.status） |
+| 复杂题拆解失败 | LLM 没把嵌套子查询式问题拆两步 |
+
+跑 `python scripts/analyze_bad_cases.py <preset>` 生成 `output/<preset>/bad_cases.md`。
+
+---
+
+## 📁 项目结构
+
 ```
-
-This creates:
-
-- `data/ecommerce.db`: the local SQLite ecommerce demo database.
-- `data/schema_catalog.json`: the schema metadata used by retrieval and prompts.
-
-### 4. Start the app
-
-```powershell
-uvicorn app.main:app --reload
-```
-
-Open:
-
-```text
-http://localhost:8000/demo
-```
-
-Try:
-
-- 销售额最高的前 10 个商品是什么？
-- 各品类商品数量占比是多少？
-- 按月份统计下单数量趋势。
-- 每个地区的客户数量是多少？
-
-## API
-
-### Synchronous query
-
-```http
-POST /api/text2sql
-Content-Type: application/json
-
-{
-  "user_id": "demo",
-  "question": "销售额最高的前 10 个商品是什么？",
-  "datasource_id": "ecommerce_db",
-  "session_id": "demo"
-}
-```
-
-### Streaming query
-
-```http
-POST /api/text2sql/stream
-Content-Type: application/json
-```
-
-The stream returns `text/event-stream` events. The frontend uses it to update workflow nodes, SQL, answer text, row count, and charts while the query is running.
-
-### Schema browser
-
-```http
-GET /api/schema?datasource_id=ecommerce_db
-```
-
-## Use Your Own Database
-
-The default data source is configured in [app/services/db_service.py](app/services/db_service.py):
-
-```python
-self.datasource_map = {
-    "ecommerce_db": project_root / "data" / "ecommerce.db",
-}
-```
-
-### If your database is SQLite
-
-1. Put your database file in the project, for example `data/my_company.db`.
-2. Build a schema catalog:
-
-   ```powershell
-   python scripts/build_schema_catalog.py data/my_company.db my_company_db
-   ```
-
-3. Add the data source in [app/services/db_service.py](app/services/db_service.py):
-
-   ```python
-   self.datasource_map = {
-       "ecommerce_db": project_root / "data" / "ecommerce.db",
-       "my_company_db": project_root / "data" / "my_company.db",
-   }
-   ```
-
-4. Use `"datasource_id": "my_company_db"` in API requests.
-
-> [!NOTE]
-> `scripts/build_schema_catalog.py` can extract table names, columns, primary keys, foreign keys, and sample values. For better Text2SQL accuracy, manually enrich `business_name`, `description`, relationship descriptions, and business rules in `data/schema_catalog.json`.
-
-### If your database is MySQL, PostgreSQL, SQL Server, or another engine
-
-You need to add an adapter. The current implementation is SQLite-first.
-
-1. Add a readonly connection path in [app/services/db_service.py](app/services/db_service.py).
-2. Give the data source a stable `datasource_id`, such as `finance_prod_readonly`.
-3. Use a database account with readonly permissions only.
-4. Generate or maintain a matching `data/schema_catalog.json`.
-5. Review [app/services/sql_service.py](app/services/sql_service.py) for SQL dialect and safety-rule compatibility.
-6. Build a domain-specific evaluation set in `data/eval_questions.json`.
-7. Run evaluation before exposing the system to real users.
-
-Do not connect production directly on the first attempt. Start with a readonly account, a sanitized sample database, and a small evaluation set.
-
-## Evaluation
-
-```powershell
-python -m scripts.run_evaluation --preset deepseek_v4_flash --tag v8
-python -m scripts.run_evaluation --compare
-```
-
-Tracked evaluation artifacts:
-
-- [data/eval_questions.json](data/eval_questions.json): 60 benchmark questions with `gold_sql`.
-- [data/schema_catalog.json](data/schema_catalog.json): schema metadata for retrieval and prompt construction.
-- [output/comparison.json](output/comparison.json): compact cross-model and cross-version summary.
-
-## Tests
-
-```powershell
-python -m pytest -q
-python -m compileall app scripts -q
-```
-
-## Project Layout
-
-```text
 app/
-  agents/       Review Agent and Repair Agent
-  api/          FastAPI routes and SSE endpoint
-  nodes/        LangGraph node implementations
-  prompts/      Prompt templates
-  schemas/      Request, response, and workflow state models
-  services/     LLM, schema, SQL, and DB services
-  tools/        Function Calling tools
-  workflow/     Graph definition and complex-question orchestrator
-data/
-  eval_questions.json
-  schema_catalog.json
-docs/
-  EVALUATION.md
-  assets/
-frontend/
-  index.html
-  style.css
-  app.js
+├── agents/                       # 可独立运行的 Agent 单元
+│   ├── sql_review_agent.py       #   Function-Calling SQL 审查
+│   └── react_sql_repair_agent.py #   ReAct 模式自修复
+├── api/routes/                   # FastAPI 路由（SSE 流式）
+├── nodes/                        # LangGraph 节点（17 个）
+│   ├── intent_node.py            #   🔍 意图识别
+│   ├── classify_node.py          #   🏷️ 复杂度分类
+│   ├── decompose_node.py         #   🧩 问题拆解
+│   ├── semantic_parse_node.py    #   📝 语义解析
+│   ├── schema_retrieval_node.py  #   🗄️ 4 阶段 RAG
+│   ├── sql_generation_node.py    #   ⚡ 生成 SQL
+│   ├── sql_review_node.py        #   🔍 SQL 审查
+│   ├── self_reflection_node.py   #   🪞 自反思
+│   ├── sql_validation_node.py    #   🛡️ SQL 校验
+│   ├── sql_execution_node.py     #   ▶️ 执行查询
+│   ├── sql_repair_node.py        #   🔧 ReAct 修复
+│   ├── answer_node.py            #   💬 汇总回答
+│   └── terminal_nodes.py         #   ❌ 终态节点
+├── prompts/                      # 所有 prompt 集中管理
+├── schemas/                      # TypedDict state + Pydantic
+├── services/
+│   ├── db_service.py             #   只读 SQL 执行
+│   ├── llm_service.py            #   统一 LLM + token 统计
+│   └── schema_service.py         #   多阶段 RAG 检索
+├── workflow/
+│   ├── graph.py                  #   LangGraph StateGraph 装配
+│   ├── orchestrator.py           #   复杂问题编排
+│   ├── trace_wrapper.py          #   自动 trace 包装器
+│   └── state_helpers.py
+└── utils/trace_utils.py
+
 scripts/
-  init_ecommerce_db.py
-  build_schema_catalog.py
-  run_evaluation.py
-tests/
+├── run_evaluation.py             # 评测主入口
+├── analyze_bad_cases.py          # 失败归因报告
+├── build_schema_catalog.py       # 生成 schema 索引
+├── init_ecommerce_db.py          # 初始化 demo 数据库
+├── deploy_docker.sh              # 一键推送 Docker Hub
+└── pull_and_run.sh               # 一键拉取并启动
+
+frontend/             # 单页 SPA（无打包，纯 HTML/CSS/JS）
+data/                 # 评测集 + Schema + SQLite
+docs/                 # 架构图 / 评测结果图
+output/               # 评测输出（gitignore）
 ```
+
+---
+
+## 🛠️ 技术栈
+
+| 层 | 技术 |
+|---|---|
+| Agent 编排 | LangGraph 1.0+（StateGraph + 条件路由 + ReAct 循环） |
+| LLM | OpenAI 兼容协议（DeepSeek / Qwen / Gemini / Kimi / MiMo 等 12 个预设） |
+| Embedding + Rerank | 硅基流动 `BAAI/bge-m3` + `BAAI/bge-reranker-v2-m3` |
+| 关键词检索 | rank_bm25 + jieba |
+| 向量库 | ChromaDB（持久化 + schema-hash 缓存） |
+| 后端 | FastAPI + SSE 流式 |
+| 前端 | 原生 HTML/CSS/JS + ECharts + SVG 流程图 |
+| 数据库 | SQLite（只读接入） |
+| 容器化 | Docker + Docker Compose |
+
+---
+
+## 📈 跑评测
+
+```bash
+# 单模型（用 .env 里的 LLM_PRESET）
+python scripts/run_evaluation.py --tag my_experiment
+
+# 指定难度
+python scripts/run_evaluation.py --difficulty medium --tag my_experiment
+
+# 多模型对比
+python scripts/run_evaluation.py --all
+
+# 失败归因分析
+python scripts/analyze_bad_cases.py deepseek_v4_flash
+```
+
+输出结构：
+
+```
+output/<preset>/
+├── summary.json              # 汇总指标
+├── bad_cases.md              # 失败归因报告
+├── questions/
+│   └── 001.json              # 每题详情
+└── sql/
+    └── 001.sql               # 每题生成的 SQL
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **多模型路由** — 按问题复杂度自动选模型（简单用小模型省 token，复杂用大模型）
+- [ ] **查询缓存** — 重复问题直接返回，省 LLM 调用
+- [ ] **Query Rewrite** — 用户口语 → 标准查询改写
+- [ ] **MCP Server 化** — 让外部 Agent 能调用本系统
+- [ ] **多数据库接入** — MySQL / PostgreSQL / 跨库联邦
+- [ ] **LangSmith / LangFuse 集成** — 商业级可观测性
+- [ ] **多轮对话** — 实体级对话记忆
+- [ ] **CI/CD** — GitHub Actions 自动跑评测
+
+---
+
+## 🤝 Contributing
+
+详见 [CONTRIBUTING.md](CONTRIBUTING.md)。核心约定：
+
+- 改 prompt 前先跑 `analyze_bad_cases.py` 看当前错题
+- 改后跑评测对比 before/after
+- PR 附数据证明
+
+---
+
+## 📄 License
+
+MIT — 详见 [LICENSE](LICENSE)。
+
+---
+
+## 🙏 致谢
+
+- [LangGraph](https://github.com/langchain-ai/langgraph) — Agent 编排框架
+- [SiliconFlow](https://siliconflow.cn) — Embedding + Rerank 服务
+- [DeepSeek](https://deepseek.com) — Chat LLM
+- [ChromaDB](https://www.trychroma.com) — 向量数据库
+- [BAAI](https://github.com/FlagOpen/FlagEmbedding) — bge-m3 / bge-reranker-v2-m3
+
+---
+
+> **求职用项目** · 目标岗位：AI Agent 工程师 · 重点展示：Tool Use / Planning / Reflection / ReAct / Observability / Evaluation

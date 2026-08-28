@@ -19,6 +19,7 @@ const NODES = [
   {id:'schema',            em:'🗄️', lb:'Schema 检索',  cx:616, cy:280, lane:'main'},
   {id:'sql_gen',           em:'⚡', lb:'生成 SQL',     cx:770, cy:280, lane:'main'},
   {id:'sql_review',        em:'🔍', lb:'SQL 审查',     cx:924, cy:280, lane:'main'},
+  {id:'self_reflection',   em:'🪞', lb:'自反思',       cx:924, cy:354, lane:'reflect'},
   {id:'validate',          em:'🛡️', lb:'SQL 校验',     cx:924, cy:428, lane:'exec'},
   {id:'execute',           em:'▶️', lb:'执行查询',     cx:770, cy:428, lane:'exec'},
   {id:'answer',            em:'💬', lb:'汇总回答',     cx:616, cy:428, lane:'exec'},
@@ -43,7 +44,8 @@ const EDGES = [
   {f:'semantic',      t:'schema',             d:'M528 280 L550 280'},
   {f:'schema',        t:'sql_gen',            d:'M682 280 L704 280'},
   {f:'sql_gen',       t:'sql_review',         d:'M836 280 L858 280'},
-  {f:'sql_review',    t:'validate',           d:'M924 312 L924 396'},
+  {f:'sql_review',    t:'self_reflection',    d:'M924 312 L924 322'},
+  {f:'self_reflection',t:'validate',          d:'M924 386 L924 396'},
   {f:'validate',      t:'execute',            c:'通过',       d:'M858 428 L836 428'},
   {f:'validate',      t:'answer_valid_fail',  c:'失败',       d:'M924 460 L924 536 L616 536 L616 558', lx:936, ly:504, ta:'start'},
   {f:'execute',       t:'answer',             c:'成功',       d:'M704 428 L682 428'},
@@ -77,10 +79,12 @@ function buildSvg(){
   h+=`<g class="flow-lanes">
     <rect x="28" y="56" width="984" height="120" rx="18" class="lane-bg lane-side"/>
     <rect x="28" y="214" width="984" height="120" rx="18" class="lane-bg lane-main"/>
+    <rect x="28" y="322" width="984" height="60" rx="14" class="lane-bg lane-reflect"/>
     <rect x="28" y="362" width="984" height="120" rx="18" class="lane-bg lane-exec"/>
     <rect x="28" y="526" width="984" height="118" rx="18" class="lane-bg lane-fail"/>
     <text x="48" y="78" class="lane-label">BRANCH</text>
     <text x="48" y="236" class="lane-label">MAIN PIPELINE</text>
+    <text x="48" y="344" class="lane-label">REFLECT</text>
     <text x="48" y="384" class="lane-label">RUN & ANSWER</text>
     <text x="48" y="548" class="lane-label">REPAIR / FAILURE</text>
   </g>`;
@@ -216,7 +220,7 @@ async function loadSchema(){
     const d=await r.json();
     let html='';
     for(const t of d.tables){
-      html+=`<div class="tbl"><div class="tbl-name" onclick="tg('cols_${t.table_name}')"><span class="caret" id="caret_cols_${t.table_name}">▶</span>${t.table_name}<span class="meta">${t.row_count||'?'}R ${t.columns.length}C</span></div><div class="tbl-cols" id="cols_${t.table_name}">`;
+      html+=`<div class="tbl"><div class="tbl-name" onclick="tg('cols_${t.table_name}')"><span class="caret open" id="caret_cols_${t.table_name}">▼</span>${t.table_name}<span class="meta">${t.row_count||'?'}R × ${t.columns.length}C</span></div><div class="tbl-cols open" id="cols_${t.table_name}">`;
       for(const c of t.columns){
         html+=`<div class="col-line">${c.is_primary_key?'<span class="pk">PK</span>':''}${c.column_name}<span class="type">${c.type}</span></div>`;
         if(c.sample_values&&c.sample_values.length)html+=`<span class="col-sample">${c.sample_values.slice(0,2).join(', ')}</span>`;
@@ -262,6 +266,12 @@ function ask(q){
       if(ev.answer){fAns=ev.answer;$1('answerCard').style.display='block';$1('answerBlock').textContent=ev.answer}
       if(ev.rows&&ev.rows.length){fRows=ev.rows;$1('tableCard').style.display='block';$1('rowCount').textContent='['+(ev.row_count||ev.rows.length)+' rows]';renderTable(ev.rows)}
       if(ev.confidence!=null)fConf=ev.confidence;
+      if(ev.warnings&&ev.warnings.length){renderWarnings(ev.warnings)}
+      if(ev.self_reflection){renderRisk(ev.self_reflection)}
+    }else if(ev.type==='cost_summary'){
+      $1('costCard').style.display='block';
+      $1('costTokens').textContent=(ev.tokens||0).toLocaleString();
+      $1('costCalls').textContent=(ev.calls||0).toString();
     }else if(ev.type==='done'){doneAll()}
     }catch(e){}}}
     setBusy(false);
@@ -272,8 +282,10 @@ function ask(q){
 }
 function addMsg(txt,isUser){const d=document.createElement('div');d.className='msg '+(isUser?'user':'ai');d.textContent=txt;const c=$1('chatMsgs');c.appendChild(d);c.scrollTop=c.scrollHeight}
 function setBusy(b){$1('sendBtn').disabled=b;const d=$1('dot');d.className='status-dot '+(b?'busy':'online');$1('statusLabel').textContent=b?'BUSY':'ONLINE'}
-function hideBlocks(){['sqlCard','answerCard','chartCard','tableCard','confBar'].forEach(id=>{const c=$1(id);if(c)c.style.display='none'})}
+function hideBlocks(){['sqlCard','answerCard','chartCard','tableCard','confBar','costCard'].forEach(id=>{const c=$1(id);if(c)c.style.display='none'})}
 function hlSQL(s){return s.replace(/\b(SELECT|FROM|WHERE|AND|OR|JOIN|INNER|LEFT|RIGHT|ON|GROUP|BY|ORDER|ASC|DESC|LIMIT|HAVING|COUNT|SUM|AVG|MAX|MIN|AS|DISTINCT|IN|NOT|NULL|IS|LIKE|BETWEEN|CASE|WHEN|THEN|ELSE|END|UNION|ALL|EXISTS|CREATE|TABLE|INSERT|UPDATE|DELETE|DROP|ALTER|INDEX|PRIMARY|KEY|FOREIGN|REFERENCES|INTO|VALUES|SET)\b/gi,'<span class="sql-kw">$1</span>').replace(/'[^']*'/g,'<span class="sql-str">$&</span>').replace(/\b(\d+\.?\d*)\b/g,'<span class="sql-num">$1</span>')}
+function renderWarnings(w){$1('costCard').style.display='block';const list=$1('warnList');const items=list.children;const existing=new Set(Array.from(items).map(d=>d.dataset.w));const fresh=w.filter(x=>!existing.has(x));for(const x of fresh){const d=document.createElement('div');d.textContent='• '+x;d.dataset.w=x;list.appendChild(d)}$1('costWarn').textContent=list.children.length}
+function renderRisk(sr){const p=$1('riskPill');const lvl=(sr&&sr.risk_level)||'low';p.className='risk-pill risk-'+lvl;p.textContent='Self-Reflection: '+lvl.toUpperCase()+' risk';p.style.display='inline-block'}
 function renderTable(rows){const cols=Object.keys(rows[0]);const t=$1('dataTable');t.innerHTML='<thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>{const v=r[c];return'<td class="'+(typeof v==='number'?'num':'')+'">'+(v===null?'<span style="color:var(--text-dim)">null</span>':v)+'</td>'}).join('')+'</tr>').join('')+'</tbody>'}
 function toast(m){const t=$1('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',4000)}
 

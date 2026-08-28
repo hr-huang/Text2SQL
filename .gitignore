@@ -50,3 +50,13 @@ Thumbs.db
 
 # Generated presentation scratch file
 presentation.html
+
+# Office documents (school reports etc.)
+*.docx
+*.pptx
+*.doc
+*.ppt
+*.xlsx
+
+# Playwright cache
+.playwright-cli/

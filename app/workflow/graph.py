@@ -30,6 +30,7 @@ from app.nodes.semantic_parse_node import semantic_parse_node
 from app.nodes.schema_retrieval_node import schema_retrieval_node
 from app.nodes.sql_generation_node import sql_generation_node
 from app.nodes.sql_review_node import sql_review_node
+from app.nodes.self_reflection_node import self_reflection_node
 from app.nodes.sql_validation_node import sql_validation_node
 from app.nodes.sql_execution_node import sql_execution_node
 from app.nodes.sql_repair_node import sql_repair_node
@@ -109,6 +110,7 @@ def compile_graph():
     builder.add_node("schema", traced("schema")(schema_retrieval_node))
     builder.add_node("sql_gen", traced("sql_gen")(sql_generation_node))
     builder.add_node("sql_review", traced("sql_review")(sql_review_node))
+    builder.add_node("self_reflection", traced("self_reflection")(self_reflection_node))
     builder.add_node("validate", traced("validate")(sql_validation_node))
     builder.add_node("execute", traced("execute")(sql_execution_node))
     builder.add_node("sql_repair", traced("sql_repair")(sql_repair_node))
@@ -155,11 +157,12 @@ def compile_graph():
     builder.add_edge("decompose", "orchestrator")
     builder.add_edge("orchestrator", END)
 
-    # Serial chain: semantic → schema → sql_gen → sql_review → validate
+    # Serial chain: semantic → schema → sql_gen → sql_review → self_reflection → validate
     builder.add_edge("semantic", "schema")
     builder.add_edge("schema", "sql_gen")
     builder.add_edge("sql_gen", "sql_review")
-    builder.add_edge("sql_review", "validate")
+    builder.add_edge("sql_review", "self_reflection")
+    builder.add_edge("self_reflection", "validate")
 
     # validate → execute | answer_validation_failed
     builder.add_conditional_edges(

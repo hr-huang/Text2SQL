@@ -71,6 +71,30 @@ Few-shot 示例（模仿这种风格）
   字段: customers(customer_id,vip_level:[普通,银卡,金卡,钻石]), orders(order_id,customer_id,total_amount)
   SQL: SELECT c.vip_level, AVG(o.total_amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.vip_level
 
+示例 9（多表 JOIN 串联：从"评分"到订单金额）:
+  用户: 各评级的订单平均金额是多少？
+  字段: reviews(review_id,product_id,rating:[1,2,3,4,5]), products(product_id,name), order_details(detail_id,order_id,product_id), orders(order_id,total_amount)
+  SQL: SELECT r.rating, AVG(o.total_amount) AS avg_amount FROM reviews r JOIN products p ON r.product_id=p.product_id JOIN order_details od ON p.product_id=od.product_id JOIN orders o ON od.order_id=o.order_id GROUP BY r.rating ORDER BY r.rating
+  注意: "评级/评分"对应 reviews.rating，不是 customers.vip_level。需要从 reviews 出发，串 products → order_details → orders 拿到订单金额。
+
+示例 10（多表 JOIN 串联：退货流）:
+  用户: 被退货次数最多的5个商品？
+  字段: products(product_id,name), return_details(detail_id,return_id,product_id,quantity), returns(return_id,return_date)
+  SQL: SELECT p.name, COUNT(r.return_id) AS return_count FROM products p JOIN return_details rd ON p.product_id=rd.product_id JOIN returns r ON rd.return_id=r.return_id GROUP BY p.product_id ORDER BY return_count DESC LIMIT 5
+  注意: "退货次数"必须从 returns 主表 COUNT，不能只 JOIN return_details 就完事。
+
+示例 11（状态过滤走事件表：物流签收）:
+  用户: 各物流公司的签收率是多少？
+  字段: shippers(shipper_id,name), orders(order_id,shipper_id), shipping_tracking(track_id,order_id,status:[已发货,运输中,已签收,派送失败])
+  SQL: SELECT s.name, ROUND(SUM(CASE WHEN st.status='已签收' THEN 1 ELSE 0 END)*100.0/COUNT(*), 2) AS sign_rate FROM shippers s JOIN orders o ON s.shipper_id=o.shipper_id JOIN shipping_tracking st ON o.order_id=st.order_id GROUP BY s.shipper_id ORDER BY sign_rate DESC
+  注意: "签收状态"在 shipping_tracking 表里，不是 orders.status。订单状态（已付款/已发货等）和物流跟踪状态是分开的两件事。
+
+示例 12（嵌套聚合：每单多少商品）:
+  用户: 平均每笔订单包含几个商品？
+  字段: order_details(detail_id,order_id,product_id,quantity)
+  SQL: SELECT AVG(total_qty) FROM (SELECT order_id, SUM(quantity) AS total_qty FROM order_details GROUP BY order_id)
+  注意: "每笔订单包含几个"需要先按 order_id 聚合，再用 AVG。需要子查询。
+
 输出 JSON 格式：
 {
   "sql": "SELECT ...",

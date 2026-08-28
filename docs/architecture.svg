@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 760" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-self" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/>
+    </marker>
+    <linearGradient id="startGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="reflectGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#3b2966"/><stop offset="1" stop-color="#241a3d"/>
+    </linearGradient>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <style>
+    .lane-bg { stroke: #1e293b; stroke-width: 1; }
+    .lane-branch { fill: #2a1f3d; }
+    .lane-main   { fill: #1a2942; }
+    .lane-reflect { fill: #2d1f3d; }
+    .lane-exec   { fill: #1a3a2a; }
+    .lane-fail   { fill: #3a1a1f; }
+    .lane-label  { fill: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+    .node        { fill: url(#nodeGrad); stroke: #334155; stroke-width: 1; }
+    .node-reflect { fill: url(#reflectGrad); stroke: #7c3aed; stroke-width: 1.5; }
+    .node-special { fill: #1e293b; stroke: #f59e0b; stroke-width: 1.5; stroke-dasharray: 4 2; }
+    .node-text   { fill: #e2e8f0; font-size: 11px; font-weight: 600; text-anchor: middle; }
+    .node-emoji  { font-size: 16px; text-anchor: middle; }
+    .start-end   { fill: url(#startGrad); stroke: #475569; stroke-width: 1.5; }
+    .edge        { fill: none; stroke: #475569; stroke-width: 1.5; }
+    .edge-loop   { fill: none; stroke: #a78bfa; stroke-width: 2; stroke-dasharray: 5 3; }
+    .edge-cond   { fill: #94a3b8; font-size: 10px; font-weight: 500; }
+  </style>
+
+  <!-- Lanes -->
+  <rect x="20" y="40" width="1200" height="120" rx="12" class="lane-bg lane-branch"/>
+  <rect x="20" y="180" width="1200" height="160" rx="12" class="lane-bg lane-main"/>
+  <rect x="20" y="350" width="1200" height="60" rx="10" class="lane-bg lane-reflect"/>
+  <rect x="20" y="420" width="1200" height="160" rx="12" class="lane-bg lane-exec"/>
+  <rect x="20" y="590" width="1200" height="130" rx="12" class="lane-bg lane-fail"/>
+  <text x="40" y="62" class="lane-label">BRANCH</text>
+  <text x="40" y="202" class="lane-label">MAIN PIPELINE</text>
+  <text x="40" y="372" class="lane-label">REFLECT</text>
+  <text x="40" y="442" class="lane-label">RUN &amp; ANSWER</text>
+  <text x="40" y="612" class="lane-label">REPAIR / FAILURE</text>
+
+  <!-- Edges (drawn first, behind nodes) -->
+  <path d="M 80 270 L 130 270" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 200 250 L 200 160 L 250 160" class="edge" marker-end="url(#arrow)"/>
+  <text x="216" y="200" class="edge-cond">非数据</text>
+  <path d="M 270 270 L 300 270" class="edge" marker-end="url(#arrow)"/>
+  <text x="285" y="262" class="edge-cond">数据</text>
+  <path d="M 350 250 L 350 160 L 480 160" class="edge" marker-end="url(#arrow)"/>
+  <text x="370" y="200" class="edge-cond">复杂</text>
+  <path d="M 420 270 L 450 270" class="edge" marker-end="url(#arrow)"/>
+  <text x="435" y="262" class="edge-cond">简单</text>
+  <path d="M 600 160 L 640 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 760 160 L 1180 160" class="edge" marker-end="url(#arrow)"/>
+  <text x="970" y="152" class="edge-cond">→ END</text>
+  <path d="M 520 270 L 550 270" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 680 270 L 710 270" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 840 270 L 870 270" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 1010 310 L 1010 340" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 1010 410 L 1010 440" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 940 500 L 880 500" class="edge" marker-end="url(#arrow)"/>
+  <text x="910" y="492" class="edge-cond">通过</text>
+  <path d="M 1010 520 L 1010 580 L 660 580 L 660 600" class="edge" marker-end="url(#arrow)"/>
+  <text x="1024" y="555" class="edge-cond">失败</text>
+  <path d="M 800 520 L 800 580 L 720 580 L 720 500" class="edge-loop" marker-end="url(#arrow-self)"/>
+  <text x="690" y="555" class="edge-cond" fill="#a78bfa">失败&lt;3 → 修复</text>
+  <path d="M 850 520 L 850 555 L 1100 555 L 1100 580 L 1010 580" class="edge" marker-end="url(#arrow)"/>
+  <text x="1075" y="548" class="edge-cond">失败≥3</text>
+  <path d="M 660 520 L 660 600" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 730 660 L 770 660" class="edge" marker-end="url(#arrow)"/>
+  <text x="750" y="652" class="edge-cond">放弃</text>
+  <path d="M 660 630 L 660 720 L 1180 720" class="edge" marker-end="url(#arrow)"/>
+  <text x="900" y="712" class="edge-cond">→ END</text>
+  <path d="M 1010 660 L 1010 720 L 1180 720" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 320 160 L 1180 160" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- START node -->
+  <rect x="20" y="250" width="60" height="40" rx="20" class="start-end" filter="url(#softShadow)"/>
+  <text x="50" y="275" class="node-text">START</text>
+
+  <!-- END nodes -->
+  <rect x="1160" y="140" width="60" height="40" rx="20" class="start-end" filter="url(#softShadow)"/>
+  <text x="1190" y="165" class="node-text">END</text>
+  <rect x="1160" y="700" width="60" height="40" rx="20" class="start-end" filter="url(#softShadow)"/>
+  <text x="1190" y="725" class="node-text">END</text>
+
+  <!-- Branch lane: answer_non_data, decompose, orchestrator -->
+  <g filter="url(#softShadow)">
+    <rect x="130" y="130" width="120" height="60" rx="8" class="node node-special"/>
+    <text x="190" y="155" class="node-emoji">💬</text>
+    <text x="190" y="175" class="node-text">非数据回答</text>
+
+    <rect x="480" y="130" width="120" height="60" rx="8" class="node"/>
+    <text x="540" y="155" class="node-emoji">🧩</text>
+    <text x="540" y="175" class="node-text">拆解问题</text>
+
+    <rect x="640" y="130" width="120" height="60" rx="8" class="node"/>
+    <text x="700" y="155" class="node-emoji">🎯</text>
+    <text x="700" y="175" class="node-text">编排执行</text>
+  </g>
+
+  <!-- Main pipeline: detect_intent → classify → semantic → schema → sql_gen → sql_review -->
+  <g filter="url(#softShadow)">
+    <rect x="130" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="190" y="265" class="node-emoji">🔍</text>
+    <text x="190" y="285" class="node-text">意图识别</text>
+
+    <rect x="300" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="360" y="265" class="node-emoji">🏷️</text>
+    <text x="360" y="285" class="node-text">复杂度分类</text>
+
+    <rect x="450" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="510" y="265" class="node-emoji">📝</text>
+    <text x="510" y="285" class="node-text">语义解析</text>
+
+    <rect x="610" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="670" y="265" class="node-emoji">🗄️</text>
+    <text x="670" y="285" class="node-text">Schema 检索</text>
+
+    <rect x="770" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="830" y="265" class="node-emoji">⚡</text>
+    <text x="830" y="285" class="node-text">生成 SQL</text>
+
+    <rect x="950" y="240" width="120" height="60" rx="8" class="node"/>
+    <text x="1010" y="265" class="node-emoji">🔍</text>
+    <text x="1010" y="285" class="node-text">SQL 审查</text>
+  </g>
+
+  <!-- Reflect lane: self_reflection -->
+  <g filter="url(#softShadow)">
+    <rect x="950" y="340" width="120" height="50" rx="8" class="node-reflect"/>
+    <text x="1010" y="362" class="node-emoji">🪞</text>
+    <text x="1010" y="378" class="node-text" fill="#c4b5fd">自反思</text>
+  </g>
+
+  <!-- Exec lane: validate, execute, answer, answer_valid_fail -->
+  <g filter="url(#softShadow)">
+    <rect x="950" y="450" width="120" height="60" rx="8" class="node"/>
+    <text x="1010" y="475" class="node-emoji">🛡️</text>
+    <text x="1010" y="495" class="node-text">SQL 校验</text>
+
+    <rect x="780" y="450" width="120" height="60" rx="8" class="node"/>
+    <text x="840" y="475" class="node-emoji">▶️</text>
+    <text x="840" y="495" class="node-text">执行查询</text>
+
+    <rect x="600" y="450" width="120" height="60" rx="8" class="node"/>
+    <text x="660" y="475" class="node-emoji">💬</text>
+    <text x="660" y="495" class="node-text">汇总回答</text>
+
+    <rect x="600" y="610" width="120" height="50" rx="8" class="node node-special"/>
+    <text x="660" y="630" class="node-emoji">❌</text>
+    <text x="660" y="648" class="node-text">校验失败</text>
+  </g>
+
+  <!-- Fail lane: sql_repair, answer_exec_fail -->
+  <g filter="url(#softShadow)">
+    <rect x="770" y="630" width="120" height="50" rx="8" class="node"/>
+    <text x="830" y="650" class="node-emoji">🔧</text>
+    <text x="830" y="668" class="node-text">ReAct 修复</text>
+
+    <rect x="950" y="630" width="120" height="50" rx="8" class="node node-special"/>
+    <text x="1010" y="650" class="node-emoji">❌</text>
+    <text x="1010" y="668" class="node-text">执行失败</text>
+  </g>
+
+  <!-- Title -->
+  <text x="40" y="30" fill="#94a3b8" font-size="13" font-weight="600" letter-spacing="1px">ENTERPRISE TEXT2SQL · AGENT ARCHITECTURE</text>
+</svg>

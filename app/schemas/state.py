@@ -45,6 +45,9 @@ class Text2SQLState(TypedDict, total=False):
     sql_review_issues: list[str]
     sql_review_confidence: float
 
+    # Self-reflection 自评结果
+    self_reflection: dict[str, Any]
+
     # 复杂问题子步骤上下文（orchestrator 注入）
     context_from_previous: list[dict[str, Any]]
 

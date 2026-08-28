@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# 测试 / 缓存
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# 运行时产物
+output/
+chroma_data/
+*.log
+logs/
+
+# 环境变量（绝对不能进镜像）
+.env
+.env.local
+.env.*.local
+
+# 大文件 / 数据集
+*.db
+*.sqlite3
+*.pkl
+
+# PPT 演示等
+*.pptx
+*.html~
+
+# Playwright cache
+.playwright-cli/
+
+# Office documents (实验报告, PPT 草稿)
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.xlsx
+
+# Presentation scratch files
+presentation.html
+presentation-swiss.html

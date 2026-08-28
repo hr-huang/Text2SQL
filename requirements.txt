@@ -10,3 +10,5 @@ langgraph-checkpoint>=2.0
 chromadb
 pytest
 faker
+rank_bm25
+jieba

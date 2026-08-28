@@ -1,5 +1,6 @@
 # app/main.py
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -15,7 +16,17 @@ load_dotenv()
 app_name = os.getenv("APP_NAME", "Enterprise Text2SQL")
 app_env = os.getenv("APP_ENV", "dev")
 
-app = FastAPI(title=app_name)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时：编译 LangGraph 工作流
+    graph = compile_graph()
+    set_graph(graph)
+    yield
+    # 关闭时：清理资源（目前无需操作）
+
+
+app = FastAPI(title=app_name, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,12 +35,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup():
-    graph = compile_graph()
-    set_graph(graph)
 
 
 @app.get("/health")
@@ -49,3 +54,8 @@ async def demo_page():
     demo_path = os.path.join(frontend_dir, "index.html")
     with open(demo_path, encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)

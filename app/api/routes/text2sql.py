@@ -19,7 +19,7 @@ def get_schema(datasource_id: str = "ecommerce_db"):
     """返回数据库 Schema 摘要 — 前端 Schema 浏览器使用"""
     from app.services.schema_service import SchemaService
     svc = SchemaService()
-    result = svc.search_relevant_schema(datasource_id=datasource_id, question="")
+    result = svc.build_all_candidate_schema(datasource_id)
     tables = []
     for t in result.get("candidate_tables", []):
         cols = [c for c in result.get("candidate_columns", []) if c["table_name"] == t["table_name"]]
@@ -104,6 +104,8 @@ async def text2sql_stream(req: Text2SQLRequest):
         yield f"data: {json.dumps({'type':'start','question':req.question}, ensure_ascii=False)}\n\n"
 
         # 2. LangGraph astream 逐个节点推送
+        total_tokens = 0
+        from app.services.llm_service import LLMService
         try:
             async for event in graph.astream(state, stream_mode="updates"):
                 for node_name, node_output in event.items():
@@ -124,11 +126,18 @@ async def text2sql_stream(req: Text2SQLRequest):
                             payload["confidence"] = node_output["confidence"]
                         if "complexity" in node_output:
                             payload["complexity"] = node_output["complexity"]
+                        if "warnings" in node_output:
+                            payload["warnings"] = node_output["warnings"]
+                        if "self_reflection" in node_output:
+                            payload["self_reflection"] = node_output["self_reflection"]
 
                     yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
-
         except Exception as e:
             yield f"data: {json.dumps({'type':'error','message':str(e)}, ensure_ascii=False)}\n\n"
+
+        # 2.5 推送一次总成本汇总
+        stats = LLMService.get_stats()
+        yield f"data: {json.dumps({'type':'cost_summary','tokens':stats.get('total_tokens',0),'calls':stats.get('calls',0)}, ensure_ascii=False)}\n\n"
 
         # 3. 推送完成事件
         yield f"data: {json.dumps({'type':'done'}, ensure_ascii=False)}\n\n"

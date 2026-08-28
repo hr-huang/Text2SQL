@@ -63,6 +63,18 @@
         <div class="card-bd"><table class="data-tbl" id="dataTable"></table></div>
       </div>
       <div class="conf-row reveal" id="confBar" style="display:none"><span>Confidence</span><div class="conf-track"><div class="conf-fill" id="confFill"></div></div><span id="confText"></span></div>
+      <div class="card reveal" id="costCard" style="display:none">
+        <div class="card-hd"><div class="card-dot cost"></div> Agent Cost & Latency</div>
+        <div class="card-bd">
+          <div class="cost-grid">
+            <div><span class="cost-num" id="costTokens">0</span><span class="cost-lbl">Tokens</span></div>
+            <div><span class="cost-num" id="costCalls">0</span><span class="cost-lbl">LLM Calls</span></div>
+            <div><span class="cost-num" id="costWarn">0</span><span class="cost-lbl">Warnings</span></div>
+          </div>
+          <div class="risk-pill" id="riskPill" style="display:none"></div>
+          <div class="warn-list" id="warnList"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

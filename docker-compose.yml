@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: enterprise-text2sql
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
+    volumes:
+      # 持久化向量索引 + 评测输出
+      - ./chroma_data:/app/chroma_data
+      - ./output:/app/output
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    # 首次启动时自动初始化 demo 数据库 + schema catalog
+    command: >
+      sh -c "
+        if [ ! -f data/ecommerce.db ]; then
+          echo '[entrypoint] Initializing demo database...' &&
+          python scripts/init_ecommerce_db.py;
+        fi &&
+        if [ ! -f data/schema_catalog.json ]; then
+          echo '[entrypoint] Building schema catalog...' &&
+          python scripts/build_schema_catalog.py;
+        fi &&
+        echo '[entrypoint] Starting FastAPI on 0.0.0.0:8000' &&
+        python -m app.main
+      "

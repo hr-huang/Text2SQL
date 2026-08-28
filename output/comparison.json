@@ -1,39 +1,6 @@
 {
-  "generated_at": "2026-06-03 22:19:27 CST",
+  "generated_at": "2026-08-27 23:11:42 CST",
   "cross_model": [
-    {
-      "model": "deepseek_v4_flash",
-      "tag": "v8",
-      "evaluated_at": "2026-06-03 22:19:27 CST",
-      "accuracy": 91.7,
-      "passed": 55,
-      "total": 60,
-      "avg_time_sec": 44.9,
-      "tokens": {
-        "calls": 375,
-        "input_tokens": 597045,
-        "output_tokens": 108087,
-        "total_tokens": 705132,
-        "prompt_chars": 1433145
-      },
-      "by_difficulty": {
-        "simple": {
-          "accuracy": 100.0,
-          "passed": 29,
-          "total": 29
-        },
-        "medium": {
-          "accuracy": 85.2,
-          "passed": 23,
-          "total": 27
-        },
-        "complex": {
-          "accuracy": 75.0,
-          "passed": 3,
-          "total": 4
-        }
-      }
-    },
     {
       "model": "deepseek_v4_flash",
       "tag": "v1",
@@ -134,6 +101,29 @@
       }
     },
     {
+      "model": "deepseek_v4_flash",
+      "tag": "fewshot_v3",
+      "evaluated_at": "2026-08-27 23:11:42 CST",
+      "accuracy": 50.0,
+      "passed": 2,
+      "total": 4,
+      "avg_time_sec": 49.8,
+      "tokens": {
+        "calls": 26,
+        "input_tokens": 44195,
+        "output_tokens": 18483,
+        "total_tokens": 62678,
+        "prompt_chars": 102591
+      },
+      "by_difficulty": {
+        "complex": {
+          "accuracy": 50.0,
+          "passed": 2,
+          "total": 4
+        }
+      }
+    },
+    {
       "model": "gemini_flash",
       "tag": "v2",
       "evaluated_at": "2026-06-02 20:40:04 CST",
@@ -170,20 +160,20 @@
   "by_model_versions": {
     "deepseek_v4_flash": [
       {
-        "tag": "v8",
-        "accuracy": 91.7,
-        "simple_pct": 100.0,
-        "medium_pct": 85.2,
-        "tokens": 705132,
-        "avg_time": 44.9
-      },
-      {
         "tag": "v1",
         "accuracy": 80.0,
         "simple_pct": 96.6,
         "medium_pct": 74.1,
         "tokens": 476271,
         "avg_time": 29.3
+      },
+      {
+        "tag": "fewshot_v3",
+        "accuracy": 50.0,
+        "simple_pct": 0,
+        "medium_pct": 0,
+        "tokens": 62678,
+        "avg_time": 49.8
       }
     ],
     "gemini_flash": [

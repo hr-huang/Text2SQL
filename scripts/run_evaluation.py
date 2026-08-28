@@ -139,6 +139,7 @@ def run_eval_set(questions, graph):
             "rows_count": len(rows) if rows else 0,
             "gold_rows_count": len(gold_rows) if gold_rows else 0,
             "elapsed": round(elapsed, 2),
+            "debug_trace": final.get("debug_trace", []),
         })
         print("PASS" if match else "FAIL", flush=True)
 

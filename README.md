@@ -15,25 +15,34 @@
 
 ## ⚡ 30 秒跑起来
 
-需要一个 LLM API key（[DeepSeek](https://platform.deepseek.com) 或 [硅基流动](https://siliconflow.cn)，免费注册即用）。
+需要一个 LLM API key（[DeepSeek](https://platform.deepseek.com) 或 [硅基流动](https://siliconflow.cn)，免费注册即用）。两种方式二选一：
+
+**方式一：直接拉 Docker 镜像（不用 clone 源码，最快）**
+
+```bash
+docker run -p 8000:8000 --env-file .env huanghairui/enterprise-text2sql:v1.0.1
+```
+
+`.env` 自己建一个，最小内容：
+
+```bash
+DEEPSEEK_V4_FLASH_KEY=sk-xxx
+SILICONFLOW_API_KEY=sk-xxx
+```
+
+**方式二：clone 源码自行构建（想改代码 / 看实现时）**
 
 ```bash
 git clone https://github.com/hr-huang/text2sql.git
 cd text2sql
 
 cp .env.example .env
-# 编辑 .env 填入 DEEPSEEK_V4_FLASH_KEY 和 SILICONFLOW_API_KEY
+# 编辑 .env 填入两个 key
 
-docker compose up
+docker compose up     # 用你 clone 下来的源码构建镜像并启动
 ```
 
-打开 **http://localhost:8000/demo**
-
-或者一行从 Docker Hub 拉（本地需要有 `.env`）：
-
-```bash
-docker run -p 8000:8000 --env-file .env huanghairui/enterprise-text2sql:v1.0.1
-```
+两种方式最终都打开 **http://localhost:8000/demo**
 
 ---
 

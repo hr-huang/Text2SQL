@@ -16,6 +16,7 @@ def create_initial_state(
     question: str,
     datasource_id: str,
     session_id: str | None = None,
+    force_decompose: bool = False,
 ) -> Text2SQLState:
     """Create a fully initialized Text2SQLState for LangGraph invocation.
 
@@ -42,6 +43,7 @@ def create_initial_state(
         # ── decompose ──
         sub_questions=[],
         sub_results=[],
+        force_decompose=force_decompose,
 
         # ── semantic parse ──
         metrics=[],

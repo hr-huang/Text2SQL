@@ -5,13 +5,13 @@
       <stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e293b"/>
     </linearGradient>
     <linearGradient id="bar1" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#94a3b8"/><stop offset="1" stop-color="#64748b"/>
-    </linearGradient>
-    <linearGradient id="bar2" x1="0" x2="0" y1="0" y2="1">
       <stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/>
     </linearGradient>
-    <linearGradient id="bar3" x1="0" x2="0" y1="0" y2="1">
+    <linearGradient id="bar2" x1="0" x2="0" y1="0" y2="1">
       <stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="bar3" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#0d9488"/>
     </linearGradient>
   </defs>
 
@@ -22,23 +22,15 @@
     .grid { stroke: #1e293b; stroke-width: 1; stroke-dasharray: 3 3; }
     .tick { fill: #94a3b8; font-size: 11px; }
     .legend-text { fill: #cbd5e1; font-size: 11px; }
-    .value { fill: #ffffff; font-size: 13px; font-weight: 700; text-anchor: middle; }
-    .value-light { fill: #f1f5f9; font-size: 13px; font-weight: 700; text-anchor: middle; }
-    .delta { fill: #4ade80; font-size: 11px; font-weight: 700; text-anchor: middle; }
-    .group-label { fill: #cbd5e1; font-size: 12px; font-weight: 700; text-anchor: middle; letter-spacing: 1px; }
-    .note { fill: #94a3b8; font-size: 10px; font-style: italic; }
-    .x-label { fill: #94a3b8; font-size: 11px; text-anchor: middle; }
+    .value { fill: #ffffff; font-size: 14px; font-weight: 700; text-anchor: middle; }
+    .group-label { fill: #cbd5e1; font-size: 13px; font-weight: 700; text-anchor: middle; }
+    .note { fill: #94a3b8; font-size: 11px; text-anchor: middle; }
   </style>
 
   <rect x="0" y="0" width="760" height="480" rx="12" fill="url(#bgGrad)"/>
 
-  <text x="30" y="40" class="title">Accuracy Across Iterations</text>
-  <text x="30" y="60" class="subtitle">60-question gold eval set · DeepSeek-V4-Flash · v1 baseline → v3 current</text>
-
-  <!-- Group labels (positioned well above bars) -->
-  <text x="175" y="95" class="group-label">v1 baseline</text>
-  <text x="400" y="95" class="group-label">v2 + RAG + reflect</text>
-  <text x="625" y="95" class="group-label">v3 + few-shot</text>
+  <text x="30" y="40" class="title">Evaluation Results</text>
+  <text x="30" y="60" class="subtitle">68-question gold eval set · DeepSeek-V4-Flash</text>
 
   <!-- Y axis grid (0-100%) - chart area y=120 to y=400, range 280px -->
   <line x1="80" y1="400" x2="740" y2="400" class="axis"/>
@@ -52,64 +44,31 @@
   <text x="72" y="194" class="tick" text-anchor="end">75%</text>
   <text x="72" y="124" class="tick" text-anchor="end">100%</text>
 
-  <!--
-    Bar height formula: 280 * (value/100)
-    Bar y top:        400 - height = 400 - 280*(value/100)
-    Group 1 (v1): bars centered at x=125, 175, 225 (simple/medium/complex)
-    Group 2 (v2): bars centered at x=350, 400, 450
-    Group 3 (v3): bars centered at x=575, 625, 675
-    Bar width: 40
-  -->
-
-  <!-- Group 1: v1 baseline -->
-  <!-- Simple 97%: h=271.6, y=128.4 -->
-  <rect x="105" y="128" width="40" height="272" rx="4" fill="url(#bar1)"/>
-  <text x="125" y="148" class="value-light">97%</text>
-  <!-- Medium 74%: h=207.2, y=192.8 -->
-  <rect x="155" y="193" width="40" height="207" rx="4" fill="url(#bar1)"/>
-  <text x="175" y="213" class="value-light">74%</text>
-  <!-- Complex — (no data) -->
-  <rect x="205" y="395" width="40" height="5" rx="2" fill="#475569"/>
-  <text x="225" y="385" class="tick" text-anchor="middle">—</text>
-
-  <!-- Group 2: v2 RAG + Self-Reflection -->
   <!-- Simple 100%: h=280, y=120 -->
-  <rect x="330" y="120" width="40" height="280" rx="4" fill="url(#bar2)"/>
-  <text x="350" y="140" class="value">100%</text>
-  <text x="350" y="112" class="delta">+3</text>
-  <!-- Medium 82%: h=229.6, y=170.4 -->
-  <rect x="380" y="170" width="40" height="230" rx="4" fill="url(#bar2)"/>
-  <text x="400" y="190" class="value">82%</text>
-  <text x="400" y="162" class="delta">+8</text>
-  <!-- Complex 50%: h=140, y=260 -->
-  <rect x="430" y="260" width="40" height="140" rx="4" fill="url(#bar2)"/>
-  <text x="450" y="280" class="value">50%</text>
+  <rect x="150" y="120" width="90" height="280" rx="4" fill="url(#bar1)"/>
+  <text x="195" y="140" class="value">100%</text>
 
-  <!-- Group 3: v3 + few-shot -->
-  <!-- Simple 100%: h=280, y=120 -->
-  <rect x="555" y="120" width="40" height="280" rx="4" fill="url(#bar3)"/>
-  <text x="575" y="140" class="value">100%</text>
-  <!-- Medium 96%: h=268.8, y=131.2 -->
-  <rect x="605" y="131" width="40" height="269" rx="4" fill="url(#bar3)"/>
-  <text x="625" y="151" class="value">96%</text>
-  <text x="625" y="123" class="delta">+14</text>
-  <!-- Complex 75%: h=210, y=190 -->
-  <rect x="655" y="190" width="40" height="210" rx="4" fill="url(#bar3)"/>
-  <text x="675" y="210" class="value">75%</text>
-  <text x="675" y="182" class="delta">+25</text>
+  <!-- Medium 89.7%: h=251.2, y=148.8 -->
+  <rect x="330" y="149" width="90" height="251" rx="4" fill="url(#bar2)"/>
+  <text x="375" y="169" class="value">89.7%</text>
 
-  <!-- X-axis labels: centered per group of 3 bars -->
-  <text x="175" y="425" class="x-label">Simple · Medium · Complex</text>
-  <text x="400" y="425" class="x-label">Simple · Medium · Complex</text>
-  <text x="625" y="425" class="x-label">Simple · Medium · Complex</text>
+  <!-- Complex 75% (sub-task success rate): h=210, y=190 -->
+  <rect x="510" y="190" width="90" height="210" rx="4" fill="url(#bar3)"/>
+  <text x="555" y="210" class="value">75%</text>
+
+  <!-- X-axis labels -->
+  <text x="195" y="425" class="group-label">Simple</text>
+  <text x="195" y="445" class="note">29 / 29</text>
+  <text x="375" y="425" class="group-label">Medium</text>
+  <text x="375" y="445" class="note">26 / 29</text>
+  <text x="555" y="425" class="group-label">Complex</text>
+  <text x="555" y="445" class="note">子任务执行成功率</text>
 
   <!-- Legend -->
-  <g transform="translate(30, 455)">
-    <rect x="0" y="0" width="14" height="14" rx="3" fill="url(#bar1)"/>
-    <text x="20" y="11" class="legend-text">v1 baseline (pure vector RAG)</text>
-    <rect x="220" y="0" width="14" height="14" rx="3" fill="url(#bar2)"/>
-    <text x="240" y="11" class="legend-text">v2: + hybrid RAG + self-reflection</text>
-    <rect x="460" y="0" width="14" height="14" rx="3" fill="url(#bar3)"/>
-    <text x="480" y="11" class="legend-text">v3: + targeted few-shot prompts</text>
+  <g transform="translate(160, 462)">
+    <rect x="0" y="0" width="12" height="12" rx="2" fill="url(#bar1)"/>
+    <text x="18" y="10" class="legend-text">Simple / Medium: SQL 执行结果等价校验</text>
+    <rect x="350" y="0" width="12" height="12" rx="2" fill="url(#bar3)"/>
+    <text x="368" y="10" class="legend-text">Complex: LLM-as-judge 语义等价</text>
   </g>
 </svg>

@@ -23,6 +23,10 @@ class Text2SQLState(TypedDict, total=False):
     sub_questions: list[dict[str, Any]]
     sub_results: list[dict[str, Any]]
 
+    # 评测用：强制走 decompose→orchestrator，即使 LLM 认为单条 SQL 可解。
+    # 生产环境不设置，保留智能判断；评测时用来衡量编排路径的成功率。
+    force_decompose: bool
+
     # 语义解析结果
     metrics: list[str]
     dimensions: list[str]

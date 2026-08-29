@@ -1,6 +1,6 @@
 {
   "dataset": "ecommerce_eval",
-  "total": 60,
+  "total": 68,
   "questions": [
     {
       "id": 1,
@@ -223,14 +223,14 @@
       "question": "消费最高的10个客户分别买了哪些品类？",
       "difficulty": "complex",
       "expected_complexity": "complex",
-      "gold_sql": "SELECT c.name AS category, COUNT(od.detail_id) FROM categories c JOIN products p ON c.category_id=p.category_id JOIN order_details od ON p.product_id=od.product_id WHERE od.order_id IN (SELECT o.order_id FROM orders o WHERE o.customer_id IN (SELECT customer_id FROM orders GROUP BY customer_id ORDER BY SUM(total_amount) DESC LIMIT 10)) GROUP BY c.category_id ORDER BY COUNT(od.detail_id) DESC",
+      "gold_sql": "WITH top10 AS (\n  SELECT o.customer_id, SUM(o.total_amount) AS total\n  FROM orders o GROUP BY o.customer_id ORDER BY total DESC LIMIT 10\n)\nSELECT c.name AS customer, GROUP_CONCAT(DISTINCT cat.name) AS categories\nFROM top10 t\nJOIN customers c ON c.customer_id = t.customer_id\nJOIN orders o ON o.customer_id = t.customer_id\nJOIN order_details od ON od.order_id = o.order_id\nJOIN products p ON p.product_id = od.product_id\nJOIN categories cat ON cat.category_id = p.category_id\nGROUP BY c.customer_id, c.name\nORDER BY MAX(t.total) DESC",
       "order_sensitive": true
     },
     {
       "id": 29,
       "question": "比平均消费额高的客户住在哪些城市？",
-      "difficulty": "complex",
-      "expected_complexity": "complex",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
       "gold_sql": "SELECT c.city, SUM(o.total_amount) FROM customers c JOIN orders o ON c.customer_id=o.customer_id GROUP BY c.customer_id HAVING SUM(o.total_amount)>(SELECT AVG(total) FROM (SELECT SUM(total_amount) AS total FROM orders GROUP BY customer_id))",
       "order_sensitive": false
     },
@@ -469,17 +469,81 @@
     {
       "id": 59,
       "question": "价格高于品类均价的商品有哪些？",
-      "difficulty": "complex",
-      "expected_complexity": "complex",
+      "difficulty": "medium",
+      "expected_complexity": "simple",
       "gold_sql": "SELECT p.name, p.unit_price FROM products p WHERE p.unit_price>(SELECT AVG(unit_price) FROM products WHERE category_id=p.category_id) ORDER BY p.unit_price DESC",
       "order_sensitive": false
     },
     {
       "id": 60,
-      "question": "过去一年每个月的新增客户数和订单量？",
+      "question": "从2025年6月到2026年5月（共12个自然月），每个月的新增客户数和订单量分别是多少？",
       "difficulty": "complex",
       "expected_complexity": "complex",
-      "gold_sql": "SELECT strftime('%Y-%m', c.register_date) AS month, COUNT(c.customer_id), COUNT(DISTINCT o.order_id) FROM customers c LEFT JOIN orders o ON strftime('%Y-%m', c.register_date)=strftime('%Y-%m', o.order_date) WHERE c.register_date>=DATE('now','-1 year') GROUP BY month ORDER BY month",
+      "gold_sql": "WITH months AS (\n  SELECT DISTINCT strftime('%Y-%m', order_date) AS ym\n  FROM orders WHERE order_date >= '2025-06-01' AND order_date < '2026-06-01'\n),\nnew_cust AS (\n  SELECT strftime('%Y-%m', register_date) AS ym, COUNT(*) AS new_customers\n  FROM customers WHERE register_date >= '2025-06-01' AND register_date < '2026-06-01' GROUP BY ym\n),\nord_cnt AS (\n  SELECT strftime('%Y-%m', order_date) AS ym, COUNT(*) AS order_count\n  FROM orders WHERE order_date >= '2025-06-01' AND order_date < '2026-06-01' GROUP BY ym\n)\nSELECT m.ym AS month,\n       COALESCE(nc.new_customers, 0) AS new_customers,\n       COALESCE(oc.order_count, 0) AS order_count\nFROM months m\nLEFT JOIN new_cust nc ON nc.ym = m.ym\nLEFT JOIN ord_cnt oc ON oc.ym = m.ym\nORDER BY m.ym",
+      "order_sensitive": true
+    },
+    {
+      "id": 61,
+      "question": "退货率最高的3个品类，它们的供应商有哪些？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH cat_stats AS (\n  SELECT p.category_id,\n         COUNT(DISTINCT r.return_id) AS return_cnt,\n         COUNT(DISTINCT o.order_id) AS order_cnt,\n         CAST(COUNT(DISTINCT r.return_id) AS REAL)\n           / NULLIF(COUNT(DISTINCT o.order_id), 0) AS rate\n  FROM products p\n  LEFT JOIN order_details od ON od.product_id = p.product_id\n  LEFT JOIN orders o ON o.order_id = od.order_id\n  LEFT JOIN returns r ON r.order_id = o.order_id\n  GROUP BY p.category_id\n  ORDER BY rate DESC LIMIT 3\n)\nSELECT cat.name AS category, s.name AS supplier\nFROM cat_stats cs\nJOIN categories cat ON cat.category_id = cs.category_id\nJOIN products p ON p.category_id = cs.category_id\nJOIN suppliers s ON s.supplier_id = p.supplier_id\nGROUP BY cat.name, s.name\nORDER BY cat.name, s.name",
+      "order_sensitive": false
+    },
+    {
+      "id": 62,
+      "question": "评分高于全站平均分的商品中，哪些库存不足50件？给出它们的供应商",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH avg_rating AS (SELECT AVG(rating) AS v FROM reviews),\nprod_rating AS (\n  SELECT p.product_id, p.name, p.stock, p.supplier_id, AVG(r.rating) AS r_avg\n  FROM products p JOIN reviews r ON r.product_id = p.product_id\n  GROUP BY p.product_id\n)\nSELECT pr.name AS product, s.name AS supplier\nFROM prod_rating pr\nJOIN avg_rating a ON pr.r_avg > a.v\nJOIN suppliers s ON s.supplier_id = pr.supplier_id\nWHERE pr.stock < 50\nORDER BY pr.name",
+      "order_sensitive": false
+    },
+    {
+      "id": 63,
+      "question": "复购率最高的3个大区，它们的平均客单价是多少？复购率 = 下过至少2次订单的客户数 ÷ 全部客户数；平均客单价 = 该大区所有订单 total_amount 的平均值。",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH cust_orders AS (\n  SELECT c.customer_id, c.region_id, COUNT(DISTINCT o.order_id) AS order_cnt\n  FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id\n  GROUP BY c.customer_id, c.region_id\n),\nregion_rate AS (\n  SELECT region_id, COUNT(*) AS customers,\n         SUM(CASE WHEN order_cnt >= 2 THEN 1 ELSE 0 END) AS repeat_cust,\n         CAST(SUM(CASE WHEN order_cnt >= 2 THEN 1 ELSE 0 END) AS REAL)\n           / COUNT(*) AS repeat_rate\n  FROM cust_orders GROUP BY region_id\n),\ntop3 AS (SELECT region_id FROM region_rate\n         ORDER BY repeat_rate DESC, region_id LIMIT 3)\nSELECT r.name AS region, ROUND(AVG(o.total_amount), 2) AS avg_order_value\nFROM top3 t\nJOIN regions r ON r.region_id = t.region_id\nJOIN customers c ON c.region_id = t.region_id\nJOIN orders o ON o.customer_id = c.customer_id\nGROUP BY r.name\nORDER BY avg_order_value DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 64,
+      "question": "各品类中销售额排名前3的商品，它们的月均销量是多少？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH prod_sales AS (\n  SELECT p.category_id, p.product_id, p.name,\n         SUM(od.quantity * od.unit_price) AS sales\n  FROM products p JOIN order_details od ON od.product_id = p.product_id\n  GROUP BY p.product_id\n),\nranked AS (\n  SELECT *, ROW_NUMBER() OVER (PARTITION BY category_id\n      ORDER BY sales DESC) AS rn\n  FROM prod_sales\n),\ntop3 AS (SELECT product_id, name FROM ranked WHERE rn <= 3)\nSELECT t.name AS product,\n       ROUND(CAST(SUM(od.quantity) AS REAL)\n             / COUNT(DISTINCT strftime('%Y-%m', o.order_date)), 2) AS monthly_avg_qty\nFROM top3 t\nJOIN order_details od ON od.product_id = t.product_id\nJOIN orders o ON o.order_id = od.order_id\nGROUP BY t.product_id, t.name\nORDER BY monthly_avg_qty DESC",
+      "order_sensitive": false
+    },
+    {
+      "id": 65,
+      "question": "从未退货的客户里，消费总额最高的5位分别买了哪些品类？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH never_returned AS (\n  SELECT c.customer_id, c.name\n  FROM customers c\n  WHERE NOT EXISTS (SELECT 1 FROM returns r WHERE r.customer_id = c.customer_id)\n),\ntop5 AS (\n  SELECT nr.customer_id, nr.name, SUM(o.total_amount) AS total\n  FROM never_returned nr JOIN orders o ON o.customer_id = nr.customer_id\n  GROUP BY nr.customer_id ORDER BY total DESC LIMIT 5\n)\nSELECT t.name AS customer, GROUP_CONCAT(DISTINCT cat.name) AS categories\nFROM top5 t\nJOIN orders o ON o.customer_id = t.customer_id\nJOIN order_details od ON od.order_id = o.order_id\nJOIN products p ON p.product_id = od.product_id\nJOIN categories cat ON cat.category_id = p.category_id\nGROUP BY t.customer_id, t.name\nORDER BY MAX(t.total) DESC",
+      "order_sensitive": true
+    },
+    {
+      "id": 66,
+      "question": "按销售额降序排列，累计销售额首次达到全站总销售额80%时包含多少个商品？这些商品占全部库存总价值的百分之多少？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH prod_sales AS (\n  SELECT p.product_id, p.stock, p.cost,\n         SUM(od.quantity * od.unit_price) AS sales\n  FROM products p JOIN order_details od ON od.product_id = p.product_id\n  GROUP BY p.product_id\n),\ntot AS (SELECT SUM(sales) AS s FROM prod_sales),\ncum AS (\n  SELECT ps.*, SUM(ps.sales) OVER (ORDER BY ps.sales DESC\n      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_sales\n  FROM prod_sales ps\n),\nthreshold AS (\n  SELECT MIN(cum_sales) AS t80 FROM cum, tot WHERE cum_sales >= s * 0.8\n),\nin_pareto AS (\n  SELECT c.* FROM cum c, threshold th WHERE c.cum_sales <= th.t80\n)\nSELECT (SELECT COUNT(*) FROM in_pareto) AS pareto_product_count,\n       ROUND((SELECT SUM(stock * cost) FROM in_pareto)\n             * 100.0 / (SELECT SUM(stock * cost) FROM prod_sales), 2) AS pct_of_inventory_value",
+      "order_sensitive": false
+    },
+    {
+      "id": 67,
+      "question": "签收率最低的3家物流公司，它们配送的订单主要来自哪些城市？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH ship_rate AS (\n  SELECT s.shipper_id, s.name,\n         COUNT(DISTINCT st.track_id) AS track_cnt,\n         SUM(CASE WHEN st.status = '已签收' THEN 1 ELSE 0 END) AS signed_cnt\n  FROM shippers s\n  JOIN orders o ON o.shipper_id = s.shipper_id\n  JOIN shipping_tracking st ON st.order_id = o.order_id\n  GROUP BY s.shipper_id\n),\nrate AS (\n  SELECT *, CAST(signed_cnt AS REAL) / NULLIF(track_cnt, 0) AS sign_rate\n  FROM ship_rate ORDER BY sign_rate ASC, name LIMIT 3\n),\ncity_orders AS (\n  SELECT r.name AS shipper, c.city, COUNT(DISTINCT o.order_id) AS order_cnt\n  FROM rate r\n  JOIN orders o ON o.shipper_id = r.shipper_id\n  JOIN customers c ON c.customer_id = o.customer_id\n  GROUP BY r.name, c.city\n),\nranked AS (\n  SELECT *, ROW_NUMBER() OVER (PARTITION BY shipper\n      ORDER BY order_cnt DESC, city) AS rn\n  FROM city_orders\n)\nSELECT shipper, city, order_cnt\nFROM ranked WHERE rn <= 3\nORDER BY shipper, rn",
+      "order_sensitive": true
+    },
+    {
+      "id": 68,
+      "question": "2025年销售额环比下滑月份最多的品类有哪些，它们的退货率是多少？",
+      "difficulty": "complex",
+      "expected_complexity": "complex",
+      "gold_sql": "WITH monthly AS (\n  SELECT p.category_id, strftime('%Y-%m', o.order_date) AS ym,\n         SUM(od.quantity * od.unit_price) AS sales\n  FROM products p\n  JOIN order_details od ON od.product_id = p.product_id\n  JOIN orders o ON o.order_id = od.order_id\n  WHERE o.order_date >= '2025-01-01' AND o.order_date < '2026-01-01'\n  GROUP BY p.category_id, ym\n),\nwith_prev AS (\n  SELECT *, LAG(sales) OVER (PARTITION BY category_id ORDER BY ym) AS prev_sales\n  FROM monthly\n),\ndeclining AS (\n  SELECT category_id, COUNT(*) AS decline_months\n  FROM with_prev\n  WHERE prev_sales IS NOT NULL AND sales < prev_sales\n  GROUP BY category_id\n)\nSELECT cat.name AS category, d.decline_months,\n       ROUND(CAST(COUNT(DISTINCT r.return_id) AS REAL)\n             / NULLIF(COUNT(DISTINCT o.order_id), 0) * 100, 2) AS return_rate_pct\nFROM declining d\nJOIN categories cat ON cat.category_id = d.category_id\nJOIN products p ON p.category_id = d.category_id\nJOIN order_details od ON od.product_id = p.product_id\nJOIN orders o ON o.order_id = od.order_id\nLEFT JOIN returns r ON r.order_id = o.order_id\nGROUP BY cat.name, d.decline_months\nORDER BY d.decline_months DESC, cat.name",
       "order_sensitive": false
     }
   ]

@@ -1,25 +1,48 @@
 {
-  "generated_at": "2026-08-28 18:52:24 CST",
+  "generated_at": "2026-08-29 22:15:28 CST",
   "cross_model": [
     {
       "model": "deepseek_v4_flash",
-      "tag": "deadendfix_v4",
-      "evaluated_at": "2026-08-28 18:52:24 CST",
+      "tag": "simple_v4",
+      "evaluated_at": "2026-08-29 01:03:09 CST",
       "accuracy": 100.0,
       "passed": 29,
       "total": 29,
-      "avg_time_sec": 32.9,
+      "avg_time_sec": 48.0,
       "tokens": {
-        "calls": 203,
-        "input_tokens": 280527,
-        "output_tokens": 60539,
-        "total_tokens": 341066,
-        "prompt_chars": 624661
+        "calls": 204,
+        "input_tokens": 290685,
+        "output_tokens": 64274,
+        "total_tokens": 354959,
+        "prompt_chars": 645923
       },
       "by_difficulty": {
         "simple": {
           "accuracy": 100.0,
           "passed": 29,
+          "total": 29
+        }
+      }
+    },
+    {
+      "model": "deepseek_v4_flash",
+      "tag": "medium_final",
+      "evaluated_at": "2026-08-29 15:49:40 CST",
+      "accuracy": 89.7,
+      "passed": 26,
+      "total": 29,
+      "avg_time_sec": 50.4,
+      "tokens": {
+        "calls": 206,
+        "input_tokens": 301107,
+        "output_tokens": 133225,
+        "total_tokens": 434332,
+        "prompt_chars": 674561
+      },
+      "by_difficulty": {
+        "medium": {
+          "accuracy": 89.7,
+          "passed": 26,
           "total": 29
         }
       }
@@ -124,6 +147,29 @@
       }
     },
     {
+      "model": "deepseek_v4_flash",
+      "tag": "complex_fix_v2",
+      "evaluated_at": "2026-08-29 18:55:33 CST",
+      "accuracy": 50.0,
+      "passed": 5,
+      "total": 10,
+      "avg_time_sec": 151.0,
+      "tokens": {
+        "calls": 119,
+        "input_tokens": 251184,
+        "output_tokens": 169040,
+        "total_tokens": 420224,
+        "prompt_chars": 688472
+      },
+      "by_difficulty": {
+        "complex": {
+          "accuracy": 50.0,
+          "passed": 5,
+          "total": 10
+        }
+      }
+    },
+    {
       "model": "gemini_flash",
       "tag": "v2",
       "evaluated_at": "2026-06-02 20:40:04 CST",
@@ -160,12 +206,20 @@
   "by_model_versions": {
     "deepseek_v4_flash": [
       {
-        "tag": "deadendfix_v4",
+        "tag": "simple_v4",
         "accuracy": 100.0,
         "simple_pct": 100.0,
         "medium_pct": 0,
-        "tokens": 341066,
-        "avg_time": 32.9
+        "tokens": 354959,
+        "avg_time": 48.0
+      },
+      {
+        "tag": "medium_final",
+        "accuracy": 89.7,
+        "simple_pct": 0,
+        "medium_pct": 89.7,
+        "tokens": 434332,
+        "avg_time": 50.4
       },
       {
         "tag": "v1",
@@ -174,6 +228,14 @@
         "medium_pct": 74.1,
         "tokens": 476271,
         "avg_time": 29.3
+      },
+      {
+        "tag": "complex_fix_v2",
+        "accuracy": 50.0,
+        "simple_pct": 0,
+        "medium_pct": 0,
+        "tokens": 420224,
+        "avg_time": 151.0
       }
     ],
     "gemini_flash": [

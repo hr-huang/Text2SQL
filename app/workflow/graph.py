@@ -59,8 +59,11 @@ def route_after_classify(state: Text2SQLState) -> str:
     """After classify: decompose complex questions, skip for simple ones.
 
     Complex questions route: classify → decompose → orchestrator → END
+
+    force_decompose（评测开关）会跳过 classify 的复杂度判断直接进入 decompose，
+    用来衡量编排路径的成功率——即使 LLM 认为单条 SQL 也能解。
     """
-    if state.get("complexity") == "complex":
+    if state.get("force_decompose") or state.get("complexity") == "complex":
         return "decompose"
     return "semantic"
 

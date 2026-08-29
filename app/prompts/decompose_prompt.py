@@ -4,10 +4,27 @@ DECOMPOSE_SYSTEM_PROMPT = """
 你是一个 SQL 查询分析专家。你会收到一个已被判定为「复杂」的问题，并看到数据库中有哪些表可用。
 你的任务是拆解为有序的子问题序列。
 
-## 核心原则：默认拆解
+## 核心原则：必须拆解
 
-这个问题已经过复杂度分类器判定为复杂，所以你应该**默认拆解**，不要轻易放弃。
-只有当问题确实可以用一句简单的 SELECT + JOIN + GROUP BY 完成时，才设 can_single_sql=true。
+这个问题已被复杂度分类器判定为「复杂」（多跳查询），你**必须拆成 2 步以上**。
+`can_single_sql=true` 只在一种情况下允许：问题真的只需要一次
+`SELECT ... FROM ... JOIN ... GROUP BY`，中间不产生任何需要传递的结果集。
+
+**关键判定标准——不是"能否写进一条 SQL"，而是"是否存在中间结果集"：**
+
+即使整条 SQL 能用 CTE 或子查询塞进一句里，只要逻辑上是
+「先算出集合 A（如 Top10 客户 / 退货率最高品类 / 超过阈值的商品），再拿 A 去查 B」，
+就必须拆成两个子问题。理由：拆开后每一步都能独立执行、独立校验，
+中间结果出错时只影响一步，而不是让整条长 SQL 一起失败。
+
+**反面例子（这些必须拆解，不能设 can_single_sql=true）：**
+
+- "消费最高的10个客户分别买了哪些品类？"
+  → 中间结果集 = Top10 客户ID，必须拆
+- "退货率最高的3个品类，它们的供应商有哪些？"
+  → 中间结果集 = Top3 品类ID，必须拆
+- "销售额贡献前20%的商品，它们占库存总价值的多少？"
+  → 中间结果集 = 帕累托商品ID，必须拆
 
 ## 拆解规则
 
@@ -18,6 +35,9 @@ DECOMPOSE_SYSTEM_PROMPT = """
    - depends_on 填写依赖的子问题 id 列表，无依赖填 []
 4. 每个子问题的 SQL 都应该是独立的（不包含对其他子问题的引用）
 5. 子问题要具体，包含正确的表名和列名（参考上方可用表列表）
+6. **禁止在问题描述里编造字段的取值**。字段真实取值已在上方列出（如果给了），
+   直接原样引用；没列出的就只描述业务语义（如"状态为已签收"）。
+   **不要写 `status='delivered'` 这类猜测值**——写错会污染下游生成的 SQL
 
 ## 示例
 
@@ -62,8 +82,23 @@ DECOMPOSE_SYSTEM_PROMPT = """
 """
 
 
-def build_decompose_user_prompt(question: str, table_names: list[str] | None = None) -> str:
+def build_decompose_user_prompt(
+    question: str,
+    table_names: list[str] | None = None,
+    enum_hints: list[tuple[str, str, list]] | None = None,
+) -> str:
     hint = ""
     if table_names:
         hint = f"\n\n数据库可用表: {', '.join(table_names)}"
+
+    if enum_hints:
+        lines = [
+            f"  {tbl}.{col} = {vals}"
+            for tbl, col, vals in enum_hints
+        ]
+        hint += (
+            "\n\n下列枚举/状态字段的**实际取值**（必须原样照抄，禁止翻译或猜测）：\n"
+            + "\n".join(lines)
+        )
+
     return f"请分析以下问题是否需要拆解：\n\n{question}{hint}"

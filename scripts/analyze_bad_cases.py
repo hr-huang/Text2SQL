@@ -87,9 +87,14 @@ def categorize_failure(r: dict) -> str:
     difficulty = r.get("difficulty", "")
     debug = r.get("debug_trace") or []
 
-    # 1. 复杂问题子任务失败
-    if difficulty == "complex" and (status.startswith("sub_fail") or status == "no_decompose"):
-        return "complex_decompose_failure"
+    # 1. 复杂题的三类失败：没走编排 / 拆解失败 / 答案不匹配
+    if difficulty == "complex":
+        if "not_routed" in status:
+            return "complex_not_routed"
+        if status.startswith("sub_fail") or status == "no_decompose":
+            return "complex_decompose_failure"
+        if status == "answer_mismatch":
+            return "complex_answer_mismatch"
 
     # 2. 执行报错
     if status == "exec_error" or "syntax error" in status or "no such" in status:
@@ -169,7 +174,9 @@ def render_report(preset: str, data: dict) -> Path:
         "sql_generation_failure": "SQL 生成失败",
         "execution_error": "SQL 执行报错",
         "result_mismatch": "结果不匹配（其他原因）",
-        "complex_decompose_failure": "复杂题拆解失败",
+        "complex_decompose_failure": "复杂题：子任务执行失败",
+        "complex_not_routed": "复杂题：未走 decompose→orchestrator",
+        "complex_answer_mismatch": "复杂题：子任务跑通但答案不匹配",
         "other": "其他",
     }
 

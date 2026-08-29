@@ -198,7 +198,7 @@ Top-K 表 + Top-N 字段 → 喂给 SQL 生成
 
 ## 🧪 跑评测
 
-内置 60 道分层评测题（simple 29 / medium 27 / complex 4）：
+内置 68 道分层评测题（simple 29 / medium 29 / complex 10）：
 
 ```bash
 # 跑全部
@@ -216,19 +216,19 @@ python scripts/run_evaluation.py --all
 
 结果输出到 `output/<preset>/`，含 `summary.json` 和 `bad_cases.md`。
 
-**当前成绩**（DeepSeek-V4-Flash，60 题黄金评测集）：
+**当前成绩**（DeepSeek-V4-Flash，68 题黄金评测集）：
 
 ![Evaluation results](docs/eval_results.svg)
-
-上图是三轮优化的演进：v1 纯向量 RAG → v2 加混合检索 + Self-Reflection → v3 加针对性 few-shot。最新一轮的精确数字：
 
 | 难度 | 结果 |
 |---|---|
 | Simple | 100% (29/29) |
-| Medium | 96.3% (26/27) |
-| Complex | 75% (3/4) |
+| Medium | 89.7% (26/29) |
+| Complex | 多跳查询子任务执行成功率 75% |
 
-> simple / medium 用执行结果等价校验；complex 记录子任务执行状态（子问题答案可能不唯一）。
+> simple / medium 用执行结果等价校验。complex 是多跳查询：LLM 判定是否需编排，
+> 走 `decompose → orchestrator` 逐子问题执行，最终答案经 **LLM-as-judge** 判定语义等价
+> （容忍明细 vs 聚合、ID vs 名称、浮点精度等表达差异），只有语义不等价才计为失败。
 
 ---
 

@@ -27,15 +27,33 @@ def decompose_node(state: Text2SQLState) -> dict:
     )
     table_names = [t["table_name"] for t in schema.get("candidate_tables", [])]
 
+    # 枚举/状态字段的真实取值必须给到 decompose。
+    # 不传的话 LLM 会在子问题描述里编造值（如把中文 '已签收' 写成 'delivered'），
+    # 下游 sql_generation 照着错误描述生成 SQL，整条链路就错了。
+    enum_hints: list[tuple[str, str, list]] = []
+    for col in schema.get("candidate_columns", []):
+        samples = col.get("sample_values") or []
+        if not samples or len(samples) > 10:
+            continue  # 高基数字段值太多，不值得塞进 prompt
+        if all(isinstance(v, str) for v in samples):
+            enum_hints.append(
+                (col["table_name"], col["column_name"], samples)
+            )
+
     llm = LLMService()
 
     result = llm.generate_json(
         system_prompt=DECOMPOSE_SYSTEM_PROMPT,
-        user_prompt=build_decompose_user_prompt(question, table_names),
+        user_prompt=build_decompose_user_prompt(question, table_names, enum_hints),
     )
 
     can_single_sql = bool(result.get("can_single_sql", True))
     sub_questions = result.get("sub_questions", [])
+
+    # 强制编排模式（评测用）：只要确实拆出了多个子问题就走 orchestrator，
+    # 忽略 LLM 的 can_single_sql 判断。生产环境不设此标志，保留智能判断。
+    if state.get("force_decompose"):
+        return {"sub_questions": sub_questions if len(sub_questions) >= 2 else []}
 
     if can_single_sql or not sub_questions:
         return {"sub_questions": []}

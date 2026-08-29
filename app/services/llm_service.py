@@ -27,10 +27,20 @@ class LLMService:
         if not api_key:
             raise RuntimeError("请先在 .env 文件中配置 API Key")
 
+        # 可选代理：某些网络环境访问 LLM API 需要代理（如 DeepSeek 走 Clash）。
+        # 支持按 preset 配置（{PRESET}_PROXY，优先）或全局 LLM_PROXY。
+        # 例如 DEEPSEEK_V4_FLASH_PROXY=http://127.0.0.1:7897，SiliconFlow 留空直连。
+        http_client = None
+        proxy = os.getenv(f"{preset}_PROXY", os.getenv("LLM_PROXY", "")).strip()
+        if proxy:
+            import httpx
+            http_client = httpx.Client(proxy=proxy, timeout=120.0)
+
         self.client = OpenAI(
             api_key=api_key,
             base_url=base_url,
             timeout=120.0,
+            http_client=http_client,
         )
 
         # 思考模式配置（仅 DeepSeek V4 系列支持，Gemini/Kimi/MiMo 会报错）
